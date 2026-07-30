@@ -6,18 +6,35 @@ import Home from './pages/Home';
 import PriceList from './pages/PriceList';
 import Queue from './pages/Queue';
 import Socials from './pages/Socials';
+import AdminLogin from './pages/admin/AdminLogin';
+import AdminLayout from './pages/admin/AdminLayout';
+import Dashboard from './pages/admin/Dashboard';
+import Commissions from './pages/admin/Commissions';
+import Clients from './pages/admin/Clients';
+import Prices from './pages/admin/Prices';
+import Users from './pages/admin/Users';
+import AuditLogs from './pages/admin/AuditLogs';
 
 export default function App() {
   return (
     <BrowserRouter>
-      <ParallaxBackground />
-      <PetalParticles />
-      <Navbar />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/prices" element={<PriceList />} />
-        <Route path="/queue" element={<Queue />} />
-        <Route path="/socials" element={<Socials />} />
+        {/* Public client routes */}
+        <Route path="/" element={<><ParallaxBackground /><PetalParticles /><Navbar /><Home /></>} />
+        <Route path="/prices" element={<><ParallaxBackground /><PetalParticles /><Navbar /><PriceList /></>} />
+        <Route path="/queue" element={<><ParallaxBackground /><PetalParticles /><Navbar /><Queue /></>} />
+        <Route path="/socials" element={<><ParallaxBackground /><PetalParticles /><Navbar /><Socials /></>} />
+
+        {/* Admin routes */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="commissions" element={<Commissions />} />
+          <Route path="clients" element={<Clients />} />
+          <Route path="prices" element={<Prices />} />
+          <Route path="users" element={<Users />} />
+          <Route path="audit" element={<AuditLogs />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

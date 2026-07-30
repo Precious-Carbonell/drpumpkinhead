@@ -230,3 +230,27 @@
     align-items: center;
   }
 }
+
+.queue-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-3xl);
+  color: var(--color-text-muted);
+}
+
+.queue-loading .spin {
+  animation: spinLoader 1s linear infinite;
+}
+
+@keyframes spinLoader {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.queue-empty {
+  text-align: center;
+  padding: var(--space-3xl);
+  color: var(--color-text-muted);
+}

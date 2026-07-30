@@ -1,39 +1,17 @@
-import { useState } from 'react';
-import { User, Users, Sparkles, Clock, Check, X as XIcon, ChevronDown, Film } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Users, Sparkles, Clock, Check, X as XIcon, ChevronDown, Film, Loader } from 'lucide-react';
 import './PriceList.css';
 
-const soloItems = [
-  { type: 'Icon', php: 150, usd: 5 },
-  { type: 'Bust-up', php: 200, usd: 10 },
-];
+const API_URL = import.meta.env.VITE_API_URL || '';
 
-const coupleItems = [
-  { type: 'Icon', php: 250, usd: 11 },
-  { type: 'Bust-up', php: 350, usd: 16 },
-];
-
-const chibiItems = [
-  { type: 'Head-only', php: 150, usd: 5 },
-  { type: 'Bust-up', php: 180, usd: 7 },
-];
-
-const tweeningItems = [
-  { type: 'Easy', php: 300, usd: 15 },
-  { type: 'Medium', php: 600, usd: 25 },
-  { type: 'Difficult', php: 900, usd: 35 },
-];
-
-const frameByFrameItems = [
-  { type: 'Easy', php: 800, usd: 30 },
-  { type: 'Medium', php: 1400, usd: 45 },
-  { type: 'Difficult', php: 2000, usd: 60 },
-];
-
-const comboItems = [
-  { type: 'Easy', php: 1000, usd: 40 },
-  { type: 'Medium', php: 1800, usd: 60 },
-  { type: 'Difficult', php: 2600, usd: 80 },
-];
+interface PriceItem {
+  category: string;
+  commission_type: string;
+  description: string;
+  price_php: number;
+  price_usd: number;
+  turnaround_days: number;
+}
 
 const dosList = [
   'Yumeship',
@@ -65,6 +43,24 @@ const tosItems = [
   'Strictly no refunds once work has started.',
 ];
 
+function getCategoryIcon(category: string) {
+  switch (category) {
+    case 'Solo': return <User size={18} />;
+    case 'Couple / Duo': return <Users size={18} />;
+    case 'Chibi': return <Sparkles size={18} />;
+    default: return <Film size={18} />;
+  }
+}
+
+function getCategoryIconClass(category: string) {
+  switch (category) {
+    case 'Solo': return 'solo';
+    case 'Couple / Duo': return 'couple';
+    case 'Chibi': return 'chibi';
+    default: return 'anim';
+  }
+}
+
 function MiniTable({ items }: { items: { type: string; php: number; usd: number }[] }) {
   return (
     <table className="bento-mini-table">
@@ -80,8 +76,41 @@ function MiniTable({ items }: { items: { type: string; php: number; usd: number 
   );
 }
 
+// Group prices by category
+function groupByCategory(prices: PriceItem[]) {
+  const groups: Record<string, { type: string; php: number; usd: number }[]> = {};
+  for (const p of prices) {
+    if (!groups[p.category]) groups[p.category] = [];
+    groups[p.category].push({ type: p.commission_type, php: p.price_php, usd: p.price_usd });
+  }
+  return groups;
+}
+
+const artCategories = ['Solo', 'Couple / Duo', 'Chibi'];
+const animCategories = ['Tweening', 'Frame by Frame', 'Tweening + FbF'];
+
 export default function PriceList() {
   const [tosOpen, setTosOpen] = useState(false);
+  const [prices, setPrices] = useState<PriceItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/prices/public`)
+      .then(res => res.json())
+      .then(data => {
+        setPrices(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const grouped = groupByCategory(prices);
+  const artGroups = artCategories.filter(c => grouped[c]);
+  const animGroups = animCategories.filter(c => grouped[c]);
+
+  // Get max turnaround for each section
+  const artTat = prices.filter(p => artCategories.includes(p.category)).reduce((max, p) => Math.max(max, p.turnaround_days || 0), 0);
+  const animTat = prices.filter(p => animCategories.includes(p.category)).reduce((max, p) => Math.max(max, p.turnaround_days || 0), 0);
 
   return (
     <main className="pricelist-page">
@@ -90,115 +119,110 @@ export default function PriceList() {
         <img src="/pricing.png" alt="Pricing" className="page-heading-img" />
       </div>
 
-      <div className="bento-grid">
-        {/* ART COMMISSIONS PRICING */}
-        <div className="bento-tile tile-pricing">
-          <img src="/greenrib.png" alt="" className="pricing-ribbon" aria-hidden="true" />
-          <img src="/artcomms.png" alt="Art Commissions" className="tile-heading-img" />
-          <div className="pricing-columns">
-            <div className="pricing-col">
-              <div className="col-icon solo"><User size={18} /></div>
-              <h3>Solo</h3>
-              <MiniTable items={soloItems} />
-            </div>
-            <div className="pricing-col">
-              <div className="col-icon couple"><Users size={18} /></div>
-              <h3>Couple / Duo</h3>
-              <MiniTable items={coupleItems} />
-            </div>
-            <div className="pricing-col">
-              <div className="col-icon chibi"><Sparkles size={18} /></div>
-              <h3>Chibi</h3>
-              <MiniTable items={chibiItems} />
-            </div>
-          </div>
-          <div className="card-tat">
-            <Clock size={14} />
-            <span>TAT: ~1 week per commission</span>
-          </div>
+      {loading ? (
+        <div className="price-loading">
+          <Loader size={24} className="spin" />
+          <span>Loading prices...</span>
         </div>
-
-        {/* ANIMATION PRICING */}
-        <div className="bento-tile tile-animation">
-          <img src="/animcomms.png" alt="Animation Commissions" className="tile-heading-img" />
-          <div className="pricing-columns">
-            <div className="pricing-col">
-              <div className="col-icon anim"><Film size={18} /></div>
-              <h3>Tweening</h3>
-              <MiniTable items={tweeningItems} />
+      ) : (
+        <div className="bento-grid">
+          {/* ART COMMISSIONS PRICING */}
+          <div className="bento-tile tile-pricing">
+            <img src="/greenrib.png" alt="" className="pricing-ribbon" aria-hidden="true" />
+            <img src="/artcomms.png" alt="Art Commissions" className="tile-heading-img" />
+            <div className="pricing-columns">
+              {artGroups.map(cat => (
+                <div key={cat} className="pricing-col">
+                  <div className={`col-icon ${getCategoryIconClass(cat)}`}>{getCategoryIcon(cat)}</div>
+                  <h3>{cat}</h3>
+                  <MiniTable items={grouped[cat]} />
+                </div>
+              ))}
             </div>
-            <div className="pricing-col">
-              <div className="col-icon anim"><Film size={18} /></div>
-              <h3>Frame by Frame</h3>
-              <MiniTable items={frameByFrameItems} />
-            </div>
-            <div className="pricing-col">
-              <div className="col-icon anim"><Film size={18} /></div>
-              <h3>Tween + FbF</h3>
-              <MiniTable items={comboItems} />
-            </div>
+            {artTat > 0 && (
+              <div className="card-tat">
+                <Clock size={14} />
+                <span>TAT: ~{artTat} days per commission</span>
+              </div>
+            )}
           </div>
-          <div className="card-tat">
-            <Clock size={14} />
-            <span>TAT: 1–2 weeks · Prices depend on complexity, length, character count, details, and editing</span>
-          </div>
-        </div>
 
-        {/* DOs */}
-        <div className="bento-tile tile-dos">
-          <img src="/pinkrib.png" alt="" className="dos-ribbon" aria-hidden="true" />
-          <h3 className="tile-label">DOs</h3>
-          <ul className="check-list">
-            {dosList.map((item) => (
-              <li key={item}><Check size={14} />{item}</li>
-            ))}
-          </ul>
-        </div>
-
-        {/* DON'Ts */}
-        <div className="bento-tile tile-donts">
-          <h3 className="tile-label">DON'Ts</h3>
-          <ul className="check-list">
-            {dontsList.map((item) => (
-              <li key={item}><XIcon size={14} />{item}</li>
-            ))}
-          </ul>
-        </div>
-
-        {/* PAYMENT METHODS */}
-        <div className="bento-tile tile-payment">
-          <h3 className="tile-label">Available Payment Methods:</h3>
-          <div className="payment-badges">
-            <div className="pay-badge gcash">
-              <span className="pay-icon">G</span>
-              <span>GCash</span>
+          {/* ANIMATION PRICING */}
+          <div className="bento-tile tile-animation">
+            <img src="/animcomms.png" alt="Animation Commissions" className="tile-heading-img" />
+            <div className="pricing-columns">
+              {animGroups.map(cat => (
+                <div key={cat} className="pricing-col">
+                  <div className={`col-icon ${getCategoryIconClass(cat)}`}>{getCategoryIcon(cat)}</div>
+                  <h3>{cat === 'Tweening + FbF' ? 'Tween + FbF' : cat}</h3>
+                  <MiniTable items={grouped[cat]} />
+                </div>
+              ))}
             </div>
-            <div className="pay-badge paypal">
-              <span className="pay-icon">P</span>
-              <span>PayPal</span>
-            </div>
+            {animTat > 0 && (
+              <div className="card-tat">
+                <Clock size={14} />
+                <span>TAT: ~{animTat} days · Prices depend on complexity, length, character count, details, and editing</span>
+              </div>
+            )}
           </div>
-        </div>
 
-        {/* TERMS OF SERVICE — accordion */}
-        <div className="bento-tile tile-terms">
-          <button
-            className={`terms-toggle ${tosOpen ? 'open' : ''}`}
-            onClick={() => setTosOpen(!tosOpen)}
-            aria-expanded={tosOpen}
-          >
-            <h3 className="tile-label">Terms of Service</h3>
-            <ChevronDown size={18} className="chevron" />
-          </button>
-          <div className={`terms-body ${tosOpen ? 'expanded' : ''}`}>
-            <ul className="tos-list">
-              {tosItems.map((item) => (
-                <li key={item}>{item}</li>
+          {/* DOs */}
+          <div className="bento-tile tile-dos">
+            <img src="/pinkrib.png" alt="" className="dos-ribbon" aria-hidden="true" />
+            <h3 className="tile-label">DOs</h3>
+            <ul className="check-list">
+              {dosList.map((item) => (
+                <li key={item}><Check size={14} />{item}</li>
               ))}
             </ul>
           </div>
+
+          {/* DON'Ts */}
+          <div className="bento-tile tile-donts">
+            <h3 className="tile-label">DON'Ts</h3>
+            <ul className="check-list">
+              {dontsList.map((item) => (
+                <li key={item}><XIcon size={14} />{item}</li>
+              ))}
+            </ul>
+          </div>
+
+          {/* PAYMENT METHODS */}
+          <div className="bento-tile tile-payment">
+            <h3 className="tile-label">Payment</h3>
+            <div className="payment-badges">
+              <div className="pay-badge gcash">
+                <span className="pay-icon">G</span>
+                <span>GCash</span>
+              </div>
+              <div className="pay-badge paypal">
+                <span className="pay-icon">P</span>
+                <span>PayPal</span>
+              </div>
+            </div>
+          </div>
+
+          {/* TERMS OF SERVICE — accordion */}
+          <div className="bento-tile tile-terms">
+            <button
+              className={`terms-toggle ${tosOpen ? 'open' : ''}`}
+              onClick={() => setTosOpen(!tosOpen)}
+              aria-expanded={tosOpen}
+            >
+              <h3 className="tile-label">Terms of Service</h3>
+              <ChevronDown size={18} className="chevron" />
+            </button>
+            <div className={`terms-body ${tosOpen ? 'expanded' : ''}`}>
+              <ul className="tos-list">
+                {tosItems.map((item) => (
+                  <li key={item}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
     </main>
   );
 }

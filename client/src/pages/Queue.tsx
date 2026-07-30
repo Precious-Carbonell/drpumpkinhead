@@ -1,5 +1,8 @@
-import { Users, Clock } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Users, Clock, Loader } from 'lucide-react';
 import './Queue.css';
+
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface PublicCommission {
   maskedName: string;
@@ -9,50 +12,6 @@ interface PublicCommission {
   progressPercentage: number;
   estimatedCompletion: string;
 }
-
-// Mock data — will come from GET /api/commissions/public
-const mockCommissions: PublicCommission[] = [
-  {
-    maskedName: 'P******s C***a',
-    commissionType: 'Bust-up (Solo)',
-    queuePosition: 1,
-    commissionStatus: 'In Progress',
-    progressPercentage: 80,
-    estimatedCompletion: '2026-08-05',
-  },
-  {
-    maskedName: 'J**n D*e',
-    commissionType: 'Icon (Couple)',
-    queuePosition: 2,
-    commissionStatus: 'In Progress',
-    progressPercentage: 45,
-    estimatedCompletion: '2026-08-10',
-  },
-  {
-    maskedName: 'A*a R***s',
-    commissionType: 'Chibi Bust-up',
-    queuePosition: 3,
-    commissionStatus: 'Sketching',
-    progressPercentage: 20,
-    estimatedCompletion: '2026-08-14',
-  },
-  {
-    maskedName: 'M**k T*n',
-    commissionType: 'Icon (Solo)',
-    queuePosition: 4,
-    commissionStatus: 'Queued',
-    progressPercentage: 0,
-    estimatedCompletion: '2026-08-18',
-  },
-  {
-    maskedName: 'S****h L*e',
-    commissionType: 'Bust-up (Couple)',
-    queuePosition: 5,
-    commissionStatus: 'Queued',
-    progressPercentage: 0,
-    estimatedCompletion: '2026-08-22',
-  },
-];
 
 function getStatusClass(status: string) {
   const lower = status.toLowerCase();
@@ -66,6 +25,23 @@ function getStatusClass(status: string) {
 }
 
 export default function Queue() {
+  const [commissions, setCommissions] = useState<PublicCommission[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/commissions/public`)
+      .then(res => res.json())
+      .then(data => {
+        setCommissions(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
+
+  const activeCount = commissions.filter(
+    c => c.commissionStatus.toLowerCase().includes('progress') || c.commissionStatus.toLowerCase().includes('sketch')
+  ).length;
+
   return (
     <main className="queue-page">
       <div className="container">
@@ -81,67 +57,78 @@ export default function Queue() {
           <div className="queue-stat-card">
             <Users size={20} />
             <div>
-              <span className="stat-number">{mockCommissions.length}</span>
+              <span className="stat-number">{commissions.length}</span>
               <span className="stat-label">In Queue</span>
             </div>
           </div>
           <div className="queue-stat-card">
             <Clock size={20} />
             <div>
-              <span className="stat-number">
-                {mockCommissions.filter(c => c.commissionStatus.toLowerCase().includes('progress') || c.commissionStatus.toLowerCase().includes('sketch')).length}
-              </span>
+              <span className="stat-number">{activeCount}</span>
               <span className="stat-label">Active</span>
             </div>
           </div>
         </div>
 
-        <div className="queue-table-wrapper">
-          <table className="queue-table">
-            <thead>
-              <tr>
-                <th>Client</th>
-                <th>Commission Type</th>
-                <th>Queue #</th>
-                <th>Status</th>
-                <th>Progress</th>
-                <th>Est. Completion</th>
-              </tr>
-            </thead>
-            <tbody>
-              {mockCommissions.map((commission, index) => (
-                <tr key={index}>
-                  <td className="cell-name">{commission.maskedName}</td>
-                  <td>{commission.commissionType}</td>
-                  <td className="cell-queue">#{commission.queuePosition}</td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(commission.commissionStatus)}`}>
-                      {commission.commissionStatus}
-                    </span>
-                  </td>
-                  <td>
-                    <div className="cell-progress">
-                      <div className="mini-progress-bar">
-                        <div
-                          className="mini-progress-fill"
-                          style={{ width: `${commission.progressPercentage}%` }}
-                        />
-                      </div>
-                      <span className="progress-text">{commission.progressPercentage}%</span>
-                    </div>
-                  </td>
-                  <td className="cell-date">
-                    {new Date(commission.estimatedCompletion).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </td>
+        {loading ? (
+          <div className="queue-loading">
+            <Loader size={24} className="spin" />
+            <span>Loading queue...</span>
+          </div>
+        ) : commissions.length === 0 ? (
+          <div className="queue-empty">
+            <p>No commissions in queue right now.</p>
+          </div>
+        ) : (
+          <div className="queue-table-wrapper">
+            <table className="queue-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Commission Type</th>
+                  <th>Queue #</th>
+                  <th>Status</th>
+                  <th>Progress</th>
+                  <th>Est. Completion</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {commissions.map((commission, index) => (
+                  <tr key={index}>
+                    <td className="cell-name">{commission.maskedName}</td>
+                    <td>{commission.commissionType}</td>
+                    <td className="cell-queue">#{commission.queuePosition}</td>
+                    <td>
+                      <span className={`status-badge ${getStatusClass(commission.commissionStatus)}`}>
+                        {commission.commissionStatus}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="cell-progress">
+                        <div className="mini-progress-bar">
+                          <div
+                            className="mini-progress-fill"
+                            style={{ width: `${commission.progressPercentage}%` }}
+                          />
+                        </div>
+                        <span className="progress-text">{commission.progressPercentage}%</span>
+                      </div>
+                    </td>
+                    <td className="cell-date">
+                      {commission.estimatedCompletion
+                        ? new Date(commission.estimatedCompletion).toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
+                        : '—'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         <div className="queue-note">
           <p>
