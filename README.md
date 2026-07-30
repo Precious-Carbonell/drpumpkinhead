@@ -1,7 +1,6 @@
 # DrPumpkinHead
 
-Art commission website for digital artist DrPumpkinHead. Features a public portfolio with sakura/cherry blossom theme and an admin portal for managing commissions.
-
+Art commission website for digital artist DrPumpkinHead
 ---
 
 ## Live Site
@@ -20,25 +19,6 @@ Art commission website for digital artist DrPumpkinHead. Features a public portf
 - Supabase / PostgreSQL (database)
 - Recharts (dashboard charts)
 - Lucide React (icons)
-
----
-
-## Local Development
-
-```bash
-# Frontend
-cd client
-npm install
-npm run dev
-
-# Backend
-cd server
-npm install
-npm run dev
-```
-
-Frontend runs on http://localhost:5173
-Backend runs on http://localhost:3001
 
 ---
 
@@ -61,8 +41,6 @@ server/          Express API
   src/db/        Supabase client + audit logging
 ```
 
----
-
 ## License
 
-All artwork and branding is property of DrPumpkinHead. Code is for personal/portfolio use.
+Artwork and branding is property of DrPumpkinHead. Code is for personal/portfolio use.
