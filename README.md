@@ -1,7 +1,5 @@
-# DrPumpkinHead
+# Art commission website for digital artist DrPumpkinHead
 
-Art commission website for digital artist DrPumpkinHead
----
 
 ## Live Site
 
