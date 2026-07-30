@@ -1,0 +1,59 @@
+:root {
+  /* Pastel Pink / Sakura Palette */
+  --color-blush: #f8c8d4;
+  --color-rose: #f4a4b8;
+  --color-soft-pink: #fde8ef;
+  --color-pale-pink: #fff0f5;
+  --color-deep-rose: #e8789a;
+
+  /* Sage / Green Palette */
+  --color-sage: #b8c9a3;
+  --color-mint: #d4e6c3;
+  --color-soft-green: #e8f0e0;
+  --color-deep-sage: #7a9e6a;
+
+  /* Neutrals */
+  --color-cream: #fefaf6;
+  --color-off-white: #fdf8f4;
+  --color-warm-white: #fffbf7;
+  --color-gold: #d4a574;
+  --color-light-gold: #e8c9a0;
+  --color-text: #4a3f3f;
+  --color-text-light: #7a6b6b;
+  --color-text-muted: #a89494;
+
+  /* Shadows & Effects */
+  --shadow-soft: 0 4px 20px rgba(244, 164, 184, 0.15);
+  --shadow-medium: 0 8px 32px rgba(244, 164, 184, 0.2);
+  --shadow-card: 0 2px 12px rgba(184, 201, 163, 0.12);
+
+  /* Typography */
+  --font-heading: 'Playfair Display', Georgia, serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Spacing */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-full: 50%;
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Layout */
+  --max-width: 1200px;
+  --navbar-height: 72px;
+}

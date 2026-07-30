@@ -1,0 +1,429 @@
+.pricelist-page {
+  padding-top: calc(var(--navbar-height) + var(--space-xl));
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  padding-bottom: var(--space-xl);
+  overflow: visible;
+}
+
+/* Page heading */
+.pricelist-header {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.page-heading-img {
+  max-width: 350px;
+  width: 90%;
+  height: auto;
+}
+
+/* ===========================
+   BENTO GRID — wide layout
+   =========================== */
+.bento-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto auto auto;
+  grid-template-areas:
+    "pricing animation dos"
+    "pricing animation donts"
+    "payment payment payment"
+    "terms terms terms";
+  gap: var(--space-md);
+}
+
+/* ===========================
+   SHARED TILE STYLES
+   =========================== */
+.bento-tile {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 18px;
+  border: 1px solid rgba(248, 200, 212, 0.2);
+  box-shadow: 0 2px 12px rgba(244, 164, 184, 0.08);
+  padding: var(--space-lg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bento-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(244, 164, 184, 0.15);
+}
+
+.tile-heading-img {
+  max-width: 220px;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto var(--space-md);
+}
+
+.tile-label {
+  font-family: var(--font-heading);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* ===========================
+   PRICING TILES (shared style)
+   =========================== */
+.tile-pricing,
+.tile-animation {
+  background: linear-gradient(135deg, rgba(253, 232, 239, 0.4), rgba(232, 240, 224, 0.25)), rgba(255, 255, 255, 0.95);
+}
+
+.tile-pricing {
+  grid-area: pricing;
+  position: relative;
+  overflow: visible;
+}
+
+.pricing-ribbon {
+  position: absolute;
+  bottom: -30px;
+  left: -30px;
+  width: 140px;
+  height: auto;
+  pointer-events: none;
+  z-index: 2;
+  transform: rotate(-12deg);
+}
+
+.tile-animation {
+  grid-area: animation;
+}
+
+/* Stack the 3 sub-categories vertically inside each card */
+.pricing-columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.pricing-col {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.pricing-col h3 {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  min-width: 110px;
+}
+
+.col-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.col-icon.solo {
+  background: linear-gradient(135deg, var(--color-soft-pink), var(--color-blush));
+  color: var(--color-deep-rose);
+}
+
+.col-icon.couple {
+  background: linear-gradient(135deg, var(--color-mint), var(--color-sage));
+  color: var(--color-deep-sage);
+}
+
+.col-icon.chibi {
+  background: linear-gradient(135deg, #fde8ef, #f8c8d4);
+  color: var(--color-gold);
+}
+
+.col-icon.anim {
+  background: linear-gradient(135deg, var(--color-sage), var(--color-deep-sage));
+  color: white;
+}
+
+.bento-mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  flex: 1;
+}
+
+.bento-mini-table td {
+  padding: 4px 6px;
+  font-size: 0.82rem;
+}
+
+.bento-mini-table tr + tr td {
+  border-top: 1px solid rgba(248, 200, 212, 0.12);
+}
+
+.mini-type {
+  text-align: left;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.mini-price {
+  text-align: right;
+  font-weight: 700;
+  font-family: var(--font-heading);
+  color: var(--color-deep-rose);
+  white-space: nowrap;
+}
+
+.card-tat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: var(--space-md);
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(232, 240, 224, 0.3);
+  border: 1px solid rgba(184, 201, 163, 0.2);
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.card-tat svg {
+  color: var(--color-deep-sage);
+  flex-shrink: 0;
+}
+
+/* ===========================
+   PAYMENT TILE
+   =========================== */
+.tile-payment {
+  grid-area: payment;
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.tile-payment .tile-label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.payment-badges {
+  display: flex;
+  gap: var(--space-sm);
+  flex: 1;
+}
+
+.pay-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: var(--color-off-white);
+  border: 1px solid rgba(248, 200, 212, 0.15);
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.pay-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.65rem;
+  color: white;
+}
+
+.pay-badge.gcash .pay-icon { background: #007bff; }
+.pay-badge.paypal .pay-icon { background: #003087; }
+
+/* ===========================
+   DOs TILE
+   =========================== */
+.tile-dos {
+  grid-area: dos;
+  border-left: 3px solid var(--color-sage);
+  background: var(--color-soft-green);
+  position: relative;
+  overflow: visible;
+}
+
+.dos-ribbon {
+  position: absolute;
+  top: -30px;
+  right: -30px;
+  width: 140px;
+  height: auto;
+  pointer-events: none;
+  z-index: 2;
+  transform: rotate(12deg);
+}
+
+.tile-dos .tile-label {
+  color: var(--color-deep-sage);
+  margin-bottom: var(--space-sm);
+}
+
+/* ===========================
+   DON'Ts TILE
+   =========================== */
+.tile-donts {
+  grid-area: donts;
+  border-left: 3px solid var(--color-rose);
+  background: var(--color-soft-pink);
+}
+
+.tile-donts .tile-label {
+  color: var(--color-deep-rose);
+  margin-bottom: var(--space-sm);
+}
+
+/* ===========================
+   SHARED CHECKLIST
+   =========================== */
+.check-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  margin: 0;
+}
+
+.check-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.84rem;
+  color: var(--color-text);
+}
+
+.tile-dos .check-list li svg {
+  color: var(--color-deep-sage);
+  flex-shrink: 0;
+}
+
+.tile-donts .check-list li svg {
+  color: var(--color-deep-rose);
+  flex-shrink: 0;
+}
+
+/* ===========================
+   TERMS TILE (accordion)
+   =========================== */
+.tile-terms {
+  grid-area: terms;
+  padding: 0;
+  overflow: hidden;
+}
+
+.terms-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md) var(--space-lg);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 0.2s ease;
+}
+
+.terms-toggle:hover {
+  background: rgba(253, 232, 239, 0.3);
+}
+
+.terms-toggle .chevron {
+  transition: transform 0.3s ease;
+  color: var(--color-text-muted);
+}
+
+.terms-toggle.open .chevron {
+  transform: rotate(180deg);
+}
+
+.terms-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, padding 0.4s ease;
+  padding: 0 var(--space-lg);
+}
+
+.terms-body.expanded {
+  max-height: 400px;
+  padding: 0 var(--space-lg) var(--space-lg);
+}
+
+.tos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tos-list li {
+  font-size: 0.82rem;
+  color: var(--color-text-light);
+  padding-left: var(--space-md);
+  position: relative;
+}
+
+.tos-list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: var(--color-rose);
+}
+
+/* ===========================
+   RESPONSIVE
+   =========================== */
+@media (max-width: 900px) {
+  .bento-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "pricing"
+      "animation"
+      "dos"
+      "donts"
+      "payment"
+      "terms";
+  }
+
+  .pricing-col {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pricing-col h3 {
+    min-width: auto;
+  }
+
+  .tile-payment {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .payment-badges {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .tile-heading-img {
+    max-width: 180px;
+  }
+
+  .page-heading-img {
+    max-width: 260px;
+  }
+}

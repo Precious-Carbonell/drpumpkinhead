@@ -1,0 +1,232 @@
+.queue-page {
+  padding-top: calc(var(--navbar-height) + var(--space-3xl));
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  padding-bottom: var(--space-4xl);
+  background: url('/waterlils.jpg') center/cover no-repeat fixed;
+}
+
+.queue-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(254, 250, 246, 0.75);
+  z-index: -1;
+}
+
+.queue-header {
+  text-align: center;
+  margin-bottom: var(--space-2xl);
+}
+
+.queue-heading-img {
+  max-width: 550px;
+  width: 90%;
+  height: auto;
+  margin-bottom: var(--space-md);
+}
+
+.queue-header p {
+  max-width: 520px;
+  margin: var(--space-md) auto 0;
+}
+
+/* Stats row */
+.queue-stats {
+  display: flex;
+  gap: var(--space-md);
+  justify-content: center;
+  margin-bottom: var(--space-2xl);
+  flex-wrap: wrap;
+}
+
+.queue-stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-xl);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(248, 200, 212, 0.25);
+  box-shadow: var(--shadow-card);
+}
+
+.queue-stat-card svg {
+  color: var(--color-deep-rose);
+}
+
+.queue-stat-card div {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-number {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Table */
+.queue-table-wrapper {
+  overflow-x: auto;
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(248, 200, 212, 0.2);
+  box-shadow: var(--shadow-medium);
+}
+
+.queue-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.queue-table thead {
+  background: linear-gradient(135deg, var(--color-soft-pink), var(--color-soft-green));
+}
+
+.queue-table th {
+  padding: var(--space-md) var(--space-lg);
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.queue-table td {
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid rgba(248, 200, 212, 0.12);
+  vertical-align: middle;
+}
+
+.queue-table tbody tr {
+  transition: var(--transition-fast);
+}
+
+.queue-table tbody tr:hover {
+  background: rgba(253, 232, 239, 0.3);
+}
+
+.cell-name {
+  font-weight: 600;
+  font-family: monospace;
+  letter-spacing: 0.5px;
+  color: var(--color-text);
+}
+
+.cell-queue {
+  font-weight: 700;
+  color: var(--color-deep-rose);
+  font-family: var(--font-heading);
+  font-size: 1rem;
+}
+
+.cell-date {
+  white-space: nowrap;
+  color: var(--color-text-light);
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.status-badge.status-active {
+  background: rgba(122, 158, 106, 0.15);
+  color: var(--color-deep-sage);
+}
+
+.status-badge.status-pending {
+  background: rgba(212, 165, 116, 0.15);
+  color: var(--color-gold);
+}
+
+.status-badge.status-done {
+  background: rgba(184, 201, 163, 0.2);
+  color: var(--color-deep-sage);
+}
+
+/* Mini progress bar */
+.cell-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  min-width: 120px;
+}
+
+.mini-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--color-soft-pink);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.mini-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-blush), var(--color-rose));
+  border-radius: 3px;
+  transition: width 0.6s ease;
+}
+
+.progress-text {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-light);
+  min-width: 32px;
+}
+
+/* Note */
+.queue-note {
+  margin-top: var(--space-xl);
+  padding: var(--space-lg);
+  background: rgba(232, 240, 224, 0.4);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(184, 201, 163, 0.3);
+  text-align: center;
+}
+
+.queue-note p {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+}
+
+.queue-note strong {
+  color: var(--color-deep-sage);
+}
+
+@media (max-width: 768px) {
+  .queue-table th,
+  .queue-table td {
+    padding: var(--space-sm) var(--space-md);
+    font-size: 0.82rem;
+  }
+
+  .cell-progress {
+    min-width: 80px;
+  }
+
+  .queue-stats {
+    flex-direction: column;
+    align-items: center;
+  }
+}
