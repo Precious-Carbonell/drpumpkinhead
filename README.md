@@ -1,4 +1,6 @@
-# Art commission website for digital artist DrPumpkinHead
+# Art commission website for DrPumpkinHead
+
+![Project Thumbnail](thumbnail.png)
 
 
 ## Live Site
