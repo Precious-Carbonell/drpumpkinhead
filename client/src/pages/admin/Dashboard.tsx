@@ -6,7 +6,7 @@ import './Admin.css';
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface Stats { total: number; active: number; completed: number; pending: number; revenue: number; }
-interface Commission { id: number; commission_status: string; payment_type: string; price: number; commission_type: string; date_created: string; }
+interface Commission { id: number; commission_status: string; payment_type: string; price: number; commission_type: string; date_created: string; mode_of_payment: string; }
 interface AuditEntry { id: number; action: string; entity: string; entity_id: number; details: string; created_at: string; }
 
 const COLORS = ['#e8789a', '#7a9e6a', '#d4a574', '#b8c9a3', '#f4a4b8', '#f8c8d4'];
@@ -92,6 +92,14 @@ export default function Dashboard() {
   const revenueData = groupByPeriod(commissions, revenueFilter, 'revenue');
   const requestsData = groupByPeriod(commissions, requestsFilter, 'count');
 
+  // Revenue by payment method
+  const paymentByMethod: Record<string, number> = {};
+  commissions.forEach(c => {
+    const method = c.mode_of_payment || 'Unknown';
+    paymentByMethod[method] = (paymentByMethod[method] || 0) + getRevenue(c);
+  });
+  const paymentMethodData = Object.entries(paymentByMethod).map(([method, revenue]) => ({ method, revenue }));
+
   function getAuditIcon(action: string) {
     switch (action) { case 'CREATE': return <Plus size={12} />; case 'UPDATE': return <Pencil size={12} />; case 'DELETE': return <Trash2 size={12} />; default: return <FileText size={12} />; }
   }
@@ -136,7 +144,7 @@ export default function Dashboard() {
             {/* Revenue */}
             <div className="chart-card compact">
               <div className="chart-header">
-                <h3>Revenue</h3>
+                <h3>Revenue (₱)</h3>
                 <div className="chart-filters">
                   {(['daily', 'weekly', 'monthly'] as TimeFilter[]).map(f => (
                     <button key={f} className={`filter-btn ${revenueFilter === f ? 'active' : ''}`} onClick={() => setRevenueFilter(f)}>{f[0].toUpperCase()}</button>
@@ -157,27 +165,44 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Requests */}
-          <div className="chart-card compact">
-            <div className="chart-header">
-              <h3>Commission Requests</h3>
-              <div className="chart-filters">
-                {(['daily', 'weekly', 'monthly'] as TimeFilter[]).map(f => (
-                  <button key={f} className={`filter-btn ${requestsFilter === f ? 'active' : ''}`} onClick={() => setRequestsFilter(f)}>{f[0].toUpperCase()}</button>
-                ))}
+          {/* Bottom row: Requests + Revenue by Payment Method */}
+          <div className="charts-row">
+            <div className="chart-card compact">
+              <div className="chart-header">
+                <h3>Commission Requests</h3>
+                <div className="chart-filters">
+                  {(['daily', 'weekly', 'monthly'] as TimeFilter[]).map(f => (
+                    <button key={f} className={`filter-btn ${requestsFilter === f ? 'active' : ''}`} onClick={() => setRequestsFilter(f)}>{f[0].toUpperCase()}</button>
+                  ))}
+                </div>
               </div>
+              {requestsData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={requestsData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
+                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                    <Tooltip />
+                    <Bar dataKey="value" fill="#7a9e6a" radius={[4, 4, 0, 0]} name="Commissions" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : <p className="chart-empty">No data</p>}
             </div>
-            {requestsData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={220}>
-                <BarChart data={requestsData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
-                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                  <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
-                  <Tooltip />
-                  <Bar dataKey="value" fill="#7a9e6a" radius={[4, 4, 0, 0]} name="Commissions" />
-                </BarChart>
-              </ResponsiveContainer>
-            ) : <p className="chart-empty">No data</p>}
+
+            <div className="chart-card compact">
+              <h3>Revenue by Payment Method (₱)</h3>
+              {paymentMethodData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={220}>
+                  <BarChart data={paymentMethodData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
+                    <XAxis dataKey="method" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip formatter={(value) => `₱${Number(value).toLocaleString()}`} />
+                    <Bar dataKey="revenue" fill="#f4a4b8" radius={[4, 4, 0, 0]} name="Revenue (₱)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : <p className="chart-empty">No data</p>}
+            </div>
           </div>
         </div>
 

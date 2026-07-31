@@ -573,8 +573,8 @@
    =========================== */
 .dashboard-body {
   display: grid;
-  grid-template-columns: 1fr 360px;
-  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr 320px;
+  grid-template-rows: auto auto;
   gap: var(--space-md);
   margin-top: var(--space-lg);
 }
@@ -588,8 +588,8 @@
 
 .dashboard-right {
   min-width: 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr auto;
   gap: var(--space-md);
 }
 
@@ -878,15 +878,16 @@
 }
 
 .converter-select {
-  padding: 12px 14px;
+  padding: 12px 10px;
   border-radius: 10px;
   border: 2px solid rgba(248, 200, 212, 0.3);
   background: white;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 500;
   color: var(--color-text);
   cursor: pointer;
   outline: none;
+  width: 80px;
 }
 
 .converter-select:focus {
