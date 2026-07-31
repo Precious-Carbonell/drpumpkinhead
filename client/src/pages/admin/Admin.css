@@ -857,7 +857,8 @@
 }
 
 .converter-input {
-  flex: 1;
+  flex: none;
+  width: 140px;
   padding: 12px 14px;
   border-radius: 10px;
   border: 2px solid rgba(248, 200, 212, 0.3);
