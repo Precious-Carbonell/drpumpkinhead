@@ -18,6 +18,8 @@ const dosList = [
   'Ships',
   'OCs',
   'Real people',
+  'Suggestive',
+  'Darkships',
   'Fictional characters',
   'Light gore (still training)',
   'Simple backgrounds',
@@ -28,19 +30,22 @@ const dontsList = [
   'Mecha',
   'Furry',
   'Realism',
-  'NSFW',
+  'Full on NSFW',
   'Hate art',
   'Detailed backgrounds',
 ];
 
 const tosItems = [
-  'No reposting unless credited.',
-  'Artist draws only in their own art style.',
-  '50% downpayment or full payment upfront (GCash/PayPal).',
-  'Client receives progress updates.',
-  'Artist may reject commissions that are too difficult.',
-  'Final output delivered via Google Drive.',
-  'Strictly no refunds once work has started.',
+  'Do not repost as your own, I only allow it if im credited',
+  'I only draw in my art style',
+  '50% downpayment or full payment upfront (GCash/PayPal)',
+  'I will send updates',
+  'I can reject a comm if its too difficult',
+  'The final output will be given through gdrive',
+  'Strictly no refunds once work has started',
+  'Strictly no refunds once work has started',
+  'Custom comms are negotiable!',
+  'No rush comms since im doing my internship and thesis as well'
 ];
 
 function getCategoryIcon(category: string) {
