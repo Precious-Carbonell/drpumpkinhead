@@ -168,7 +168,7 @@
    ADMIN PAGES
    =========================== */
 .admin-page {
-  max-width: 1100px;
+  max-width: 100%;
 }
 
 .admin-page-title {
@@ -189,8 +189,8 @@
    =========================== */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: var(--space-sm);
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-md);
 }
 
 .stats-grid.compact {
@@ -200,18 +200,18 @@
 .stat-card {
   background: white;
   border-radius: 12px;
-  padding: var(--space-md);
+  padding: var(--space-lg);
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-md);
   border: 1px solid rgba(248, 200, 212, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .stat-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -226,13 +226,13 @@
 
 .stat-value {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1.4rem;
   font-weight: 700;
   color: var(--color-text);
 }
 
 .stat-label {
-  font-size: 0.7rem;
+  font-size: 0.78rem;
   color: var(--color-text-muted);
 }
 
@@ -522,8 +522,8 @@
 .charts-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
+  gap: var(--space-md);
+  margin-bottom: var(--space-md);
 }
 
 .charts-grid {
@@ -536,19 +536,19 @@
 .chart-card {
   background: white;
   border-radius: 14px;
-  padding: var(--space-md);
+  padding: var(--space-lg);
   border: 1px solid rgba(248, 200, 212, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .chart-card.compact {
-  padding: var(--space-md);
+  padding: var(--space-lg);
 }
 
 .chart-card h3 {
   font-family: var(--font-heading);
-  font-size: 0.85rem;
-  margin-bottom: var(--space-sm);
+  font-size: 0.95rem;
+  margin-bottom: var(--space-md);
   color: var(--color-text);
 }
 
@@ -573,9 +573,9 @@
    =========================== */
 .dashboard-body {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: 1fr 360px;
   gap: var(--space-md);
-  margin-top: var(--space-xl);
+  margin-top: var(--space-lg);
 }
 
 .dashboard-left {
@@ -592,10 +592,11 @@
 .audit-card {
   background: white;
   border-radius: 14px;
-  padding: var(--space-md);
+  padding: var(--space-lg);
   border: 1px solid rgba(248, 200, 212, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-  height: 240px;
+  height: 100%;
+  min-height: 280px;
   display: flex;
   flex-direction: column;
 }
@@ -753,11 +754,10 @@
 .converter-card {
   background: white;
   border-radius: 14px;
-  padding: var(--space-md);
+  padding: var(--space-lg);
   border: 1px solid rgba(248, 200, 212, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-  margin-top: var(--space-sm);
-  height: 210px;
+  margin-top: var(--space-md);
   display: flex;
   flex-direction: column;
   justify-content: center;

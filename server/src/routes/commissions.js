@@ -52,7 +52,7 @@ router.put('/:id', async (req, res) => {
   }).eq('id', req.params.id);
 
   if (error) return res.status(400).json({ error: error.message });
-  await logAudit('UPDATE', 'commission', Number(req.params.id), `Status: ${commission_status}, Progress: ${progress_percentage}%`);
+  await logAudit('UPDATE', 'commission', Number(req.params.id), `Status: ${commission_status}, Payment: ${payment_type}`);
   res.json({ success: true });
 });
 

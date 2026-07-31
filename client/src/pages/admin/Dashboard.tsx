@@ -121,9 +121,9 @@ export default function Dashboard() {
             <div className="chart-card compact">
               <h3>Status Distribution</h3>
               {pieData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={180}>
+                <ResponsiveContainer width="100%" height={280}>
                   <PieChart>
-                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={35} outerRadius={65} dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`} labelLine={false}>
+                    <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={100} dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`} labelLine={false}>
                       {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                     </Pie>
                     <Tooltip />
@@ -143,13 +143,13 @@ export default function Dashboard() {
                 </div>
               </div>
               {revenueData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={160}>
+                <ResponsiveContainer width="100%" height={240}>
                   <LineChart data={revenueData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
-                    <XAxis dataKey="date" tick={{ fontSize: 9 }} />
-                    <YAxis tick={{ fontSize: 9 }} />
+                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                    <YAxis tick={{ fontSize: 10 }} />
                     <Tooltip formatter={(value) => `₱${Number(value).toLocaleString()}`} />
-                    <Line type="monotone" dataKey="value" stroke="#e8789a" strokeWidth={2} dot={{ fill: '#e8789a', r: 3 }} name="₱" />
+                    <Line type="monotone" dataKey="value" stroke="#e8789a" strokeWidth={2} dot={{ fill: '#e8789a', r: 4 }} name="₱" />
                   </LineChart>
                 </ResponsiveContainer>
               ) : <p className="chart-empty">No data</p>}
@@ -167,11 +167,11 @@ export default function Dashboard() {
               </div>
             </div>
             {requestsData.length > 0 ? (
-              <ResponsiveContainer width="100%" height={150}>
+              <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={requestsData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
-                  <XAxis dataKey="date" tick={{ fontSize: 9 }} />
-                  <YAxis tick={{ fontSize: 9 }} allowDecimals={false} />
+                  <XAxis dataKey="date" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
                   <Tooltip />
                   <Bar dataKey="value" fill="#7a9e6a" radius={[4, 4, 0, 0]} name="Commissions" />
                 </BarChart>
