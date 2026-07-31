@@ -29,7 +29,7 @@ export default function Queue() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/commissions/public`)
+    fetch(`${API_URL}/api/commissions/public?_t=${Date.now()}`)
       .then(res => res.json())
       .then(data => {
         setCommissions(data);

@@ -14,6 +14,7 @@ function maskFullName(name) {
 
 // GET /api/commissions/public
 router.get('/commissions/public', async (req, res) => {
+  res.set('Cache-Control', 'no-store');
   const { data } = await supabase
     .from('commissions')
     .select('queue_number, commission_type, commission_status, progress_percentage, due_date, clients(full_name)')
