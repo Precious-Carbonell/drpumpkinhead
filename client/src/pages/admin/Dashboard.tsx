@@ -33,14 +33,18 @@ function getDateRange(filter: RangeFilter, customStart: string, customEnd: strin
 }
 
 function filterByRange(items: Commission[], start: string, end: string) {
-  return items.filter(c => c.date_created && c.date_created >= start && c.date_created <= end);
+  return items.filter(c => {
+    if (!c.date_created) return false;
+    const d = c.date_created.slice(0, 10); // normalize to YYYY-MM-DD
+    return d >= start && d <= end;
+  });
 }
 
 function groupByDay(items: Commission[], field: 'count' | 'revenue') {
   const grouped: Record<string, number> = {};
   items.forEach(c => {
     if (!c.date_created) return;
-    const key = c.date_created;
+    const key = c.date_created.slice(0, 10); // normalize to YYYY-MM-DD
     grouped[key] = (grouped[key] || 0) + (field === 'count' ? 1 : getRevenue(c));
   });
   return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
