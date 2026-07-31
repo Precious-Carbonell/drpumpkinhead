@@ -44,11 +44,11 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  const { client_id, queue_number, commission_type, price, mode_of_payment, payment_type, payment_status, commission_status, progress_percentage, due_date, remarks } = req.body;
+  const { client_id, queue_number, commission_type, price, mode_of_payment, payment_type, payment_status, commission_status, progress_percentage, due_date, date_created, remarks } = req.body;
 
   const { error } = await supabase.from('commissions').update({
     client_id, queue_number, commission_type, price, mode_of_payment, payment_type,
-    payment_status, commission_status, progress_percentage, due_date, remarks,
+    payment_status, commission_status, progress_percentage, due_date, date_created, remarks,
   }).eq('id', req.params.id);
 
   if (error) return res.status(400).json({ error: error.message });
