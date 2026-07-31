@@ -42,6 +42,7 @@ export default function Dashboard() {
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [revenueFilter, setRevenueFilter] = useState<TimeFilter>('daily');
   const [requestsFilter, setRequestsFilter] = useState<TimeFilter>('daily');
+  const [auditPage, setAuditPage] = useState(0);
 
   // Currency converter
   const [rate, setRate] = useState<number>(56.5); // fallback rate
@@ -182,12 +183,19 @@ export default function Dashboard() {
 
         <div className="dashboard-right">
           <div className="audit-card">
-            <h3>Activity Log</h3>
+            <div className="audit-card-header">
+              <h3>Activity Log</h3>
+              <div className="audit-pagination">
+                <button disabled={auditPage === 0} onClick={() => setAuditPage(p => p - 1)}>‹</button>
+                <span>{auditPage + 1}/{Math.max(1, Math.ceil(Math.min(auditLog.length, 9) / 3))}</span>
+                <button disabled={(auditPage + 1) * 3 >= Math.min(auditLog.length, 9)} onClick={() => setAuditPage(p => p + 1)}>›</button>
+              </div>
+            </div>
             <div className="audit-list">
               {auditLog.length === 0 ? (
                 <p className="chart-empty">No activity yet</p>
               ) : (
-                auditLog.slice(0, 10).map(entry => (
+                auditLog.slice(auditPage * 3, auditPage * 3 + 3).map(entry => (
                   <div key={entry.id} className={`audit-item ${getAuditColor(entry.action)}`}>
                     <div className="audit-icon-wrapper">{getAuditIcon(entry.action)}</div>
                     <div className="audit-content">
@@ -204,7 +212,7 @@ export default function Dashboard() {
           {/* Currency Converter */}
           <div className="converter-card">
             <div className="converter-header">
-              <h3>₱ ↔ $ Converter</h3>
+              <h3>Dollar and Peso Converter</h3>
               <button className="converter-refresh" onClick={fetchRate} title="Refresh rate">
                 <RefreshCw size={12} className={rateLoading ? 'spin' : ''} />
               </button>

@@ -602,16 +602,57 @@
   padding: var(--space-lg);
   border: 1px solid rgba(248, 200, 212, 0.15);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-  flex: 1;
   display: flex;
   flex-direction: column;
 }
 
-.audit-card h3 {
-  font-family: var(--font-heading);
-  font-size: 0.85rem;
+.audit-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: var(--space-sm);
+}
+
+.audit-card-header h3 {
+  font-family: var(--font-heading);
+  font-size: 0.95rem;
+  margin: 0;
   color: var(--color-text);
+}
+
+.audit-pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.audit-pagination button {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid rgba(248, 200, 212, 0.3);
+  background: white;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.audit-pagination button:hover:not(:disabled) {
+  background: var(--color-soft-green);
+}
+
+.audit-pagination button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.audit-pagination span {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
 }
 
 .audit-list {
