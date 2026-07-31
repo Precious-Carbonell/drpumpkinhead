@@ -1,18 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Palette, ArrowRight, Users, X as XIcon, ExternalLink } from 'lucide-react';
+import { Palette, ArrowRight, Users, ExternalLink } from 'lucide-react';
 import clipVideo from '../assets/clip.mp4';
 import './Home.css';
-
-// Portfolio images from public/portfolio
-const portfolioImages = [
-  { src: '/portfolio/1.jpg', alt: 'Artwork 1 by DrPumpkinHead' },
-  { src: '/portfolio/2.jpg', alt: 'Artwork 2 by DrPumpkinHead' },
-  { src: '/portfolio/3.jpg', alt: 'Artwork 3 by DrPumpkinHead' },
-  { src: '/portfolio/4.jpg', alt: 'Artwork 4 by DrPumpkinHead' },
-  { src: '/portfolio/5.jpg', alt: 'Artwork 5 by DrPumpkinHead' },
-  { src: '/portfolio/6.jpg', alt: 'Artwork 6 by DrPumpkinHead' },
-];
 
 function useParallax() {
   const refs = useRef<(HTMLElement | null)[]>([]);
@@ -39,106 +29,6 @@ function useParallax() {
   };
 
   return setRef;
-}
-
-function FlowerCarousel() {
-  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [hovered, setHovered] = useState(false);
-
-  const openLightbox = (index: number) => setLightboxIndex(index);
-  const closeLightbox = () => setLightboxIndex(null);
-
-  const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      openLightbox(index);
-    }
-  };
-
-  const handleLightboxKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') closeLightbox();
-  };
-
-  return (
-    <>
-      {/* SVG clip-path definition for teardrop petal shape */}
-      <svg width="0" height="0" style={{ position: 'absolute' }}>
-        <defs>
-          <clipPath id="petal-clip" clipPathUnits="objectBoundingBox">
-            <path d="M0.5,1 C0.15,0.78 0,0.45 0.08,0.22 C0.16,0.06 0.35,0 0.5,0 C0.65,0 0.84,0.06 0.92,0.22 C1,0.45 0.85,0.78 0.5,1 Z" />
-          </clipPath>
-        </defs>
-      </svg>
-
-      {/* Desktop: flower carousel */}
-      <div
-        className={`flower-carousel ${hovered ? 'paused' : ''}`}
-        onMouseLeave={() => setHovered(false)}
-      >
-        <div className="flower-center" />
-        {portfolioImages.map((img, i) => {
-          const angle = (360 / portfolioImages.length) * i;
-          return (
-            <div
-              key={i}
-              className="petal-wrapper"
-              style={{ '--angle': `${angle}deg` } as React.CSSProperties}
-              onMouseEnter={() => setHovered(true)}
-            >
-              <button
-                className="petal"
-                onClick={() => openLightbox(i)}
-                onKeyDown={(e) => handleKeyDown(e, i)}
-                aria-label={img.alt}
-                tabIndex={0}
-              >
-                <img src={img.src} alt={img.alt} loading="lazy" />
-              </button>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Mobile: horizontal scroll */}
-      <div className="flower-carousel-mobile">
-        {portfolioImages.map((img, i) => (
-          <button
-            key={i}
-            className="petal-mobile"
-            onClick={() => openLightbox(i)}
-            onKeyDown={(e) => handleKeyDown(e, i)}
-            aria-label={img.alt}
-            tabIndex={0}
-          >
-            <img src={img.src} alt={img.alt} loading="lazy" />
-          </button>
-        ))}
-      </div>
-
-      {/* Lightbox */}
-      {lightboxIndex !== null && (
-        <div
-          className="lightbox-overlay"
-          onClick={closeLightbox}
-          onKeyDown={handleLightboxKey}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Artwork lightbox"
-          tabIndex={-1}
-        >
-          <div className="lightbox-content" onClick={(e) => e.stopPropagation()}>
-            <button className="lightbox-close" onClick={closeLightbox} aria-label="Close lightbox">
-              <XIcon size={24} />
-            </button>
-            <img
-              src={portfolioImages[lightboxIndex].src}
-              alt={portfolioImages[lightboxIndex].alt}
-            />
-          </div>
-        </div>
-      )}
-    </>
-  );
 }
 
 export default function Home() {
@@ -206,27 +96,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Portfolio Section — flower carousel */}
+      {/* Portfolio Section — video background */}
       <section className="gallery-section section">
-        <div className="section-decoration gallery-deco">
-          <div className="deco-blob blob-3" />
-          <div className="deco-blob blob-4" />
-        </div>
-        <div className="container">
-          <h2 className="section-title" ref={setParallaxRef(2)}>
-            <img src="/womb.png" alt="Portfolio" className="section-title-img" />
-          </h2>
-          <FlowerCarousel />
-          <div className="portfolio-cta">
-            <a
-              href="https://toyhou.se/drpumpkinhead/art"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn btn-primary"
-            >
-              View More Projects Here <ExternalLink size={16} />
-            </a>
-          </div>
+        <video
+          className="gallery-bg-video"
+          autoPlay
+          muted
+          loop
+          playsInline
+        >
+          <source src="/portvid.mp4" type="video/mp4" />
+        </video>
+        <div className="portfolio-cta">
+          <a
+            href="https://toyhou.se/drpumpkinhead/art"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary"
+          >
+            View More Projects Here <ExternalLink size={16} />
+          </a>
         </div>
       </section>
 
