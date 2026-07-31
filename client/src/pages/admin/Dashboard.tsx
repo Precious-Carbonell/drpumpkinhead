@@ -10,27 +10,36 @@ interface Commission { id: number; commission_status: string; payment_type: stri
 interface AuditEntry { id: number; action: string; entity: string; entity_id: number; details: string; created_at: string; }
 
 const COLORS = ['#e8789a', '#7a9e6a', '#d4a574', '#b8c9a3', '#f4a4b8', '#f8c8d4'];
-type TimeFilter = 'daily' | 'weekly' | 'monthly';
+type RangeFilter = 'today' | 'week' | 'month' | 'year' | 'custom';
 
-// Revenue logic: half payment = price/2, full on completed
 function getRevenue(c: Commission): number {
   if (c.commission_status === 'Completed') return c.price;
   if (c.payment_type === 'Half') return c.price / 2;
   return c.price;
 }
 
-function groupByPeriod(items: Commission[], period: TimeFilter, field: 'count' | 'revenue') {
+function getDateRange(filter: RangeFilter, customStart: string, customEnd: string): { start: string; end: string } {
+  const today = new Date();
+  const fmt = (d: Date) => d.toISOString().split('T')[0];
+
+  switch (filter) {
+    case 'today': return { start: fmt(today), end: fmt(today) };
+    case 'week': { const ws = new Date(today); ws.setDate(today.getDate() - today.getDay()); return { start: fmt(ws), end: fmt(today) }; }
+    case 'month': { const ms = new Date(today.getFullYear(), today.getMonth(), 1); return { start: fmt(ms), end: fmt(today) }; }
+    case 'year': { const ys = new Date(today.getFullYear(), 0, 1); return { start: fmt(ys), end: fmt(today) }; }
+    case 'custom': return { start: customStart || fmt(today), end: customEnd || fmt(today) };
+  }
+}
+
+function filterByRange(items: Commission[], start: string, end: string) {
+  return items.filter(c => c.date_created && c.date_created >= start && c.date_created <= end);
+}
+
+function groupByDay(items: Commission[], field: 'count' | 'revenue') {
   const grouped: Record<string, number> = {};
   items.forEach(c => {
     if (!c.date_created) return;
-    let key = c.date_created;
-    if (period === 'weekly') {
-      const d = new Date(c.date_created);
-      const ws = new Date(d); ws.setDate(d.getDate() - d.getDay());
-      key = ws.toISOString().split('T')[0];
-    } else if (period === 'monthly') {
-      key = c.date_created.slice(0, 7);
-    }
+    const key = c.date_created;
     grouped[key] = (grouped[key] || 0) + (field === 'count' ? 1 : getRevenue(c));
   });
   return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
@@ -40,12 +49,21 @@ export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({ total: 0, active: 0, completed: 0, pending: 0, revenue: 0 });
   const [commissions, setCommissions] = useState<Commission[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
-  const [revenueFilter, setRevenueFilter] = useState<TimeFilter>('daily');
-  const [requestsFilter, setRequestsFilter] = useState<TimeFilter>('daily');
   const [auditPage, setAuditPage] = useState(0);
 
-  // Currency converter
-  const [rate, setRate] = useState<number>(56.5); // fallback rate
+  // Filters
+  const [revenueRange, setRevenueRange] = useState<RangeFilter>('month');
+  const [revenueCustomStart, setRevenueCustomStart] = useState('');
+  const [revenueCustomEnd, setRevenueCustomEnd] = useState('');
+  const [requestsRange, setRequestsRange] = useState<RangeFilter>('month');
+  const [requestsCustomStart, setRequestsCustomStart] = useState('');
+  const [requestsCustomEnd, setRequestsCustomEnd] = useState('');
+  const [paymentRange, setPaymentRange] = useState<RangeFilter>('month');
+  const [paymentCustomStart, setPaymentCustomStart] = useState('');
+  const [paymentCustomEnd, setPaymentCustomEnd] = useState('');
+
+  // Converter
+  const [rate, setRate] = useState<number>(56.5);
   const [converterInput, setConverterInput] = useState('');
   const [converterDir, setConverterDir] = useState<'php-to-usd' | 'usd-to-php'>('php-to-usd');
   const [rateLoading, setRateLoading] = useState(false);
@@ -63,10 +81,7 @@ export default function Dashboard() {
     setRateLoading(true);
     fetch('https://open.er-api.com/v6/latest/USD')
       .then(r => r.json())
-      .then(data => {
-        if (data.rates?.PHP) setRate(data.rates.PHP);
-        setRateLoading(false);
-      })
+      .then(data => { if (data.rates?.PHP) setRate(data.rates.PHP); setRateLoading(false); })
       .catch(() => setRateLoading(false));
   };
 
@@ -84,27 +99,66 @@ export default function Dashboard() {
     { label: 'Revenue', value: `₱${stats.revenue.toLocaleString()}`, icon: <DollarSign size={18} />, color: '#f4a4b8' },
   ];
 
+  // Status pie (no filter)
   const statusCounts: Record<string, number> = {};
   commissions.forEach(c => { statusCounts[c.commission_status] = (statusCounts[c.commission_status] || 0) + 1; });
   const pieData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
 
-  // Revenue: all commissions contribute (half=price/2, completed=full)
-  const revenueData = groupByPeriod(commissions, revenueFilter, 'revenue');
-  const requestsData = groupByPeriod(commissions, requestsFilter, 'count');
+  // Revenue chart
+  const revRange = getDateRange(revenueRange, revenueCustomStart, revenueCustomEnd);
+  const revenueFiltered = filterByRange(commissions, revRange.start, revRange.end);
+  const revenueData = groupByDay(revenueFiltered, 'revenue');
 
-  // Revenue by payment method
+  // Requests chart
+  const reqRange = getDateRange(requestsRange, requestsCustomStart, requestsCustomEnd);
+  const requestsFiltered = filterByRange(commissions, reqRange.start, reqRange.end);
+  const requestsData = groupByDay(requestsFiltered, 'count');
+
+  // Payment method pie
+  const payRange = getDateRange(paymentRange, paymentCustomStart, paymentCustomEnd);
+  const paymentFiltered = filterByRange(commissions, payRange.start, payRange.end);
   const paymentByMethod: Record<string, number> = {};
-  commissions.forEach(c => {
+  paymentFiltered.forEach(c => {
     const method = c.mode_of_payment || 'Unknown';
     paymentByMethod[method] = (paymentByMethod[method] || 0) + getRevenue(c);
   });
-  const paymentMethodData = Object.entries(paymentByMethod).map(([method, revenue]) => ({ method, revenue }));
+  const paymentPieData = Object.entries(paymentByMethod).map(([name, value]) => ({ name: `${name} ₱${value.toLocaleString()}`, value }));
 
   function getAuditIcon(action: string) {
     switch (action) { case 'CREATE': return <Plus size={12} />; case 'UPDATE': return <Pencil size={12} />; case 'DELETE': return <Trash2 size={12} />; default: return <FileText size={12} />; }
   }
   function getAuditColor(action: string) {
     switch (action) { case 'CREATE': return 'audit-create'; case 'UPDATE': return 'audit-update'; case 'DELETE': return 'audit-delete'; default: return ''; }
+  }
+
+  const filterButtons: RangeFilter[] = ['today', 'week', 'month', 'year', 'custom'];
+  const filterLabels: Record<RangeFilter, string> = { today: 'D', week: 'W', month: 'M', year: 'Y', custom: '⚙' };
+
+  function RangeFilterBar({ value, onChange, customStart, customEnd, onStartChange, onEndChange }: {
+    value: RangeFilter; onChange: (v: RangeFilter) => void;
+    customStart: string; customEnd: string; onStartChange: (v: string) => void; onEndChange: (v: string) => void;
+  }) {
+    return (
+      <div className="range-filter-bar">
+        <div className="chart-filters">
+          {filterButtons.map(f => (
+            <button key={f} className={`filter-btn ${value === f ? 'active' : ''}`} onClick={() => onChange(f)} title={f}>{filterLabels[f]}</button>
+          ))}
+        </div>
+        {value === 'custom' && (
+          <div className="custom-range">
+            <input type="date" value={customStart} onChange={e => onStartChange(e.target.value)} />
+            <span>–</span>
+            <input type="date" value={customEnd} onChange={e => onEndChange(e.target.value)} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  function formatRange(start: string, end: string) {
+    if (start === end) return start;
+    return `${start} — ${end}`;
   }
 
   return (
@@ -126,7 +180,6 @@ export default function Dashboard() {
       <div className="dashboard-body">
         <div className="dashboard-left">
           <div className="charts-row">
-            {/* Pie */}
             <div className="chart-card compact">
               <h3>Status Distribution</h3>
               {pieData.length > 0 ? (
@@ -141,67 +194,62 @@ export default function Dashboard() {
               ) : <p className="chart-empty">No data</p>}
             </div>
 
-            {/* Revenue */}
             <div className="chart-card compact">
               <div className="chart-header">
                 <h3>Revenue (₱)</h3>
-                <div className="chart-filters">
-                  {(['daily', 'weekly', 'monthly'] as TimeFilter[]).map(f => (
-                    <button key={f} className={`filter-btn ${revenueFilter === f ? 'active' : ''}`} onClick={() => setRevenueFilter(f)}>{f[0].toUpperCase()}</button>
-                  ))}
-                </div>
+                <RangeFilterBar value={revenueRange} onChange={setRevenueRange} customStart={revenueCustomStart} customEnd={revenueCustomEnd} onStartChange={setRevenueCustomStart} onEndChange={setRevenueCustomEnd} />
               </div>
+              <p className="chart-range-label">{formatRange(revRange.start, revRange.end)}</p>
               {revenueData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={240}>
+                <ResponsiveContainer width="100%" height={220}>
                   <LineChart data={revenueData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
-                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} />
+                    <XAxis dataKey="date" tick={{ fontSize: 9 }} />
+                    <YAxis tick={{ fontSize: 9 }} />
                     <Tooltip formatter={(value) => `₱${Number(value).toLocaleString()}`} />
                     <Line type="monotone" dataKey="value" stroke="#e8789a" strokeWidth={2} dot={{ fill: '#e8789a', r: 4 }} name="₱" />
                   </LineChart>
                 </ResponsiveContainer>
-              ) : <p className="chart-empty">No data</p>}
+              ) : <p className="chart-empty">No data for this range</p>}
             </div>
           </div>
 
-          {/* Bottom row: Requests + Revenue by Payment Method */}
           <div className="charts-row">
             <div className="chart-card compact">
               <div className="chart-header">
                 <h3>Commission Requests</h3>
-                <div className="chart-filters">
-                  {(['daily', 'weekly', 'monthly'] as TimeFilter[]).map(f => (
-                    <button key={f} className={`filter-btn ${requestsFilter === f ? 'active' : ''}`} onClick={() => setRequestsFilter(f)}>{f[0].toUpperCase()}</button>
-                  ))}
-                </div>
+                <RangeFilterBar value={requestsRange} onChange={setRequestsRange} customStart={requestsCustomStart} customEnd={requestsCustomEnd} onStartChange={setRequestsCustomStart} onEndChange={setRequestsCustomEnd} />
               </div>
+              <p className="chart-range-label">{formatRange(reqRange.start, reqRange.end)}</p>
               {requestsData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={220}>
+                <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={requestsData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
-                    <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 9 }} />
+                    <YAxis tick={{ fontSize: 9 }} allowDecimals={false} />
                     <Tooltip />
                     <Bar dataKey="value" fill="#7a9e6a" radius={[4, 4, 0, 0]} name="Commissions" />
                   </BarChart>
                 </ResponsiveContainer>
-              ) : <p className="chart-empty">No data</p>}
+              ) : <p className="chart-empty">No data for this range</p>}
             </div>
 
             <div className="chart-card compact">
-              <h3>Revenue by Payment Method (₱)</h3>
-              {paymentMethodData.length > 0 ? (
-                <ResponsiveContainer width="100%" height={220}>
-                  <BarChart data={paymentMethodData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.2)" />
-                    <XAxis dataKey="method" tick={{ fontSize: 10 }} />
-                    <YAxis tick={{ fontSize: 10 }} />
+              <div className="chart-header">
+                <h3>Revenue by Payment (₱)</h3>
+                <RangeFilterBar value={paymentRange} onChange={setPaymentRange} customStart={paymentCustomStart} customEnd={paymentCustomEnd} onStartChange={setPaymentCustomStart} onEndChange={setPaymentCustomEnd} />
+              </div>
+              <p className="chart-range-label">{formatRange(payRange.start, payRange.end)}</p>
+              {paymentPieData.length > 0 ? (
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie data={paymentPieData} cx="50%" cy="50%" outerRadius={70} dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`} labelLine={false}>
+                      {paymentPieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
+                    </Pie>
                     <Tooltip formatter={(value) => `₱${Number(value).toLocaleString()}`} />
-                    <Bar dataKey="revenue" fill="#f4a4b8" radius={[4, 4, 0, 0]} name="Revenue (₱)" />
-                  </BarChart>
+                  </PieChart>
                 </ResponsiveContainer>
-              ) : <p className="chart-empty">No data</p>}
+              ) : <p className="chart-empty">No data for this range</p>}
             </div>
           </div>
         </div>
@@ -234,7 +282,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Currency Converter */}
           <div className="converter-card">
             <div className="converter-header">
               <h3>Dollar and Peso Converter</h3>
@@ -244,22 +291,14 @@ export default function Dashboard() {
             </div>
             <p className="converter-rate">1 USD = ₱{rate.toFixed(2)}</p>
             <div className="converter-row">
-              <input
-                type="number"
-                placeholder="Amount"
-                value={converterInput}
-                onChange={e => setConverterInput(e.target.value)}
-                className="converter-input"
-              />
+              <input type="number" placeholder="Amount" value={converterInput} onChange={e => setConverterInput(e.target.value)} className="converter-input" />
               <select value={converterDir} onChange={e => setConverterDir(e.target.value as 'php-to-usd' | 'usd-to-php')} className="converter-select">
-                <option value="php-to-usd">₱ → $</option>
-                <option value="usd-to-php">$ → ₱</option>
+                <option value="php-to-usd">₱→$</option>
+                <option value="usd-to-php">$→₱</option>
               </select>
             </div>
             <div className="converter-result">
-              {converterInput && (
-                <span>{converterDir === 'php-to-usd' ? `$${converted} USD` : `₱${converted} PHP`}</span>
-              )}
+              {converterInput && <span>{converterDir === 'php-to-usd' ? `$${converted} USD` : `₱${converted} PHP`}</span>}
             </div>
           </div>
         </div>

@@ -989,3 +989,45 @@
   cursor: not-allowed;
   background: var(--color-soft-green) !important;
 }
+
+/* ===========================
+   RANGE FILTER BAR
+   =========================== */
+.range-filter-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.custom-range {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.custom-range input {
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(248, 200, 212, 0.3);
+  font-size: 0.7rem;
+  color: var(--color-text);
+  outline: none;
+  width: 110px;
+}
+
+.custom-range input:focus {
+  border-color: var(--color-rose);
+}
+
+.custom-range span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.chart-range-label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+  text-align: right;
+}
