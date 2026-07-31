@@ -46,12 +46,16 @@ router.get('/prices/public', async (req, res) => {
 // GET /api/dashboard/stats
 router.get('/dashboard/stats', async (req, res) => {
   const { count: total } = await supabase.from('commissions').select('*', { count: 'exact', head: true });
-  const { count: active } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).in('commission_status', ['In Progress', 'Sketching', 'Coloring']);
+  const { count: active } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).in('commission_status', ['Sketching', 'Coloring', 'Rendering']);
   const { count: completed } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).eq('commission_status', 'Completed');
   const { count: pending } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).eq('commission_status', 'Queued');
 
-  const { data: paidRows } = await supabase.from('commissions').select('price').eq('payment_status', 'Paid');
-  const revenue = (paidRows || []).reduce((sum, r) => sum + (r.price || 0), 0);
+  const { data: allComms } = await supabase.from('commissions').select('price, payment_type, commission_status');
+  const revenue = (allComms || []).reduce((sum, r) => {
+    if (r.commission_status === 'Completed') return sum + (r.price || 0);
+    if (r.payment_type === 'Half') return sum + ((r.price || 0) / 2);
+    return sum + (r.price || 0);
+  }, 0);
 
   res.json({ total: total || 0, active: active || 0, completed: completed || 0, pending: pending || 0, revenue });
 });

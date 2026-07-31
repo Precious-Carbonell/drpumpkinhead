@@ -15,9 +15,9 @@ interface PublicCommission {
 
 function getStatusClass(status: string) {
   const lower = status.toLowerCase();
-  if (lower.includes('progress') || lower.includes('sketch') || lower.includes('coloring'))
+  if (lower.includes('sketch') || lower.includes('coloring') || lower.includes('rendering'))
     return 'status-active';
-  if (lower.includes('queue') || lower.includes('pending'))
+  if (lower.includes('queue') || lower.includes('waitlist'))
     return 'status-pending';
   if (lower.includes('complete') || lower.includes('done'))
     return 'status-done';

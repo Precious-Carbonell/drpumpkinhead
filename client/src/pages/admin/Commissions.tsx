@@ -5,6 +5,23 @@ import './Admin.css';
 const API_URL = import.meta.env.VITE_API_URL || '';
 function getToken() { return localStorage.getItem('token') || ''; }
 
+// Status -> Progress mapping
+const STATUS_PROGRESS: Record<string, number> = {
+  'Waitlisted': 0,
+  'Queued': 0,
+  'Sketching': 25,
+  'Coloring': 60,
+  'Rendering': 85,
+  'Completed': 100,
+};
+
+// Auto due date: 1 week from today
+function getDefaultDueDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  return d.toISOString().split('T')[0];
+}
+
 interface Commission {
   id: number;
   client_id: number;
@@ -14,7 +31,6 @@ interface Commission {
   price: number;
   mode_of_payment: string;
   payment_type: string;
-  payment_status: string;
   commission_status: string;
   progress_percentage: number;
   date_created: string;
@@ -27,8 +43,8 @@ interface PriceOption { id: number; category: string; commission_type: string; p
 
 const emptyForm = {
   client_id: 0, queue_number: 0, commission_type: '', price: 0,
-  mode_of_payment: '', payment_type: '', payment_status: 'Unpaid',
-  commission_status: 'Queued', progress_percentage: 0, due_date: '', remarks: '',
+  mode_of_payment: '', payment_type: '',
+  commission_status: 'Queued', progress_percentage: 0, due_date: getDefaultDueDate(), remarks: '',
 };
 
 export default function Commissions() {
@@ -55,10 +71,14 @@ export default function Commissions() {
     setForm({
       client_id: c.client_id, queue_number: c.queue_number, commission_type: c.commission_type,
       price: c.price, mode_of_payment: c.mode_of_payment, payment_type: c.payment_type,
-      payment_status: c.payment_status, commission_status: c.commission_status,
+      commission_status: c.commission_status,
       progress_percentage: c.progress_percentage, due_date: c.due_date || '', remarks: c.remarks || '',
     });
     setShowModal(true);
+  };
+
+  const handleStatusChange = (status: string) => {
+    setForm({ ...form, commission_status: status, progress_percentage: STATUS_PROGRESS[status] ?? 0 });
   };
 
   const handleSave = async () => {
@@ -75,6 +95,13 @@ export default function Commissions() {
     load();
   };
 
+  // Revenue display: half payment = price/2, full on completed
+  const getDisplayRevenue = (c: Commission) => {
+    if (c.commission_status === 'Completed') return c.price;
+    if (c.payment_type === 'Half') return c.price / 2;
+    return c.price;
+  };
+
   return (
     <div className="admin-page">
       <div className="page-header">
@@ -86,7 +113,7 @@ export default function Commissions() {
         <table className="admin-table">
           <thead>
             <tr>
-              <th>Q#</th><th>Client</th><th>Type</th><th>Price</th><th>Status</th><th>Progress</th><th>Payment</th><th>Due</th><th>Created</th><th></th>
+              <th>Q#</th><th>Client</th><th>Type</th><th>Price</th><th>Revenue</th><th>Status</th><th>Progress</th><th>Payment</th><th>Due</th><th>Created</th><th></th>
             </tr>
           </thead>
           <tbody>
@@ -96,9 +123,10 @@ export default function Commissions() {
                 <td>{c.client_name}</td>
                 <td>{c.commission_type}</td>
                 <td>₱{c.price}</td>
+                <td>₱{getDisplayRevenue(c)}</td>
                 <td><span className="badge">{c.commission_status}</span></td>
                 <td>{c.progress_percentage}%</td>
-                <td><span className="badge">{c.payment_status}</span></td>
+                <td>{c.payment_type || '—'}</td>
                 <td>{c.due_date || '—'}</td>
                 <td>{c.date_created || '—'}</td>
                 <td className="actions">
@@ -121,7 +149,7 @@ export default function Commissions() {
             <div className="modal-body">
               <div className="form-row">
                 <div className="form-field">
-                  <label>Client</label>
+                  <label>Client *</label>
                   <select value={form.client_id} onChange={e => setForm({ ...form, client_id: Number(e.target.value) })}>
                     <option value={0}>Select...</option>
                     {clients.map(cl => <option key={cl.id} value={cl.id}>{cl.full_name}</option>)}
@@ -134,7 +162,7 @@ export default function Commissions() {
               </div>
               <div className="form-row">
                 <div className="form-field">
-                  <label>Commission Type</label>
+                  <label>Commission Type *</label>
                   <select
                     value={form.commission_type}
                     onChange={e => {
@@ -154,13 +182,13 @@ export default function Commissions() {
                   </select>
                 </div>
                 <div className="form-field">
-                  <label>Price (₱)</label>
+                  <label>Price (₱) *</label>
                   <input type="number" value={form.price} onChange={e => setForm({ ...form, price: Number(e.target.value) })} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-field">
-                  <label>Mode of Payment</label>
+                  <label>Mode of Payment *</label>
                   <select value={form.mode_of_payment} onChange={e => setForm({ ...form, mode_of_payment: e.target.value })}>
                     <option value="">Select...</option>
                     <option>GCash</option>
@@ -168,7 +196,7 @@ export default function Commissions() {
                   </select>
                 </div>
                 <div className="form-field">
-                  <label>Payment Type</label>
+                  <label>Payment Type *</label>
                   <select value={form.payment_type} onChange={e => setForm({ ...form, payment_type: e.target.value })}>
                     <option value="">Select...</option>
                     <option>Full</option>
@@ -178,34 +206,24 @@ export default function Commissions() {
               </div>
               <div className="form-row">
                 <div className="form-field">
-                  <label>Payment Status</label>
-                  <select value={form.payment_status} onChange={e => setForm({ ...form, payment_status: e.target.value })}>
-                    <option>Unpaid</option>
-                    <option>Partial</option>
-                    <option>Paid</option>
-                  </select>
-                </div>
-                <div className="form-field">
-                  <label>Commission Status</label>
-                  <select value={form.commission_status} onChange={e => setForm({ ...form, commission_status: e.target.value })}>
+                  <label>Commission Status *</label>
+                  <select value={form.commission_status} onChange={e => handleStatusChange(e.target.value)}>
+                    <option>Waitlisted</option>
                     <option>Queued</option>
-                    <option>In Progress</option>
                     <option>Sketching</option>
                     <option>Coloring</option>
-                    <option>Final Review</option>
+                    <option>Rendering</option>
                     <option>Completed</option>
                   </select>
                 </div>
-              </div>
-              <div className="form-row">
                 <div className="form-field">
                   <label>Progress %</label>
-                  <input type="number" min={0} max={100} value={form.progress_percentage} onChange={e => setForm({ ...form, progress_percentage: Number(e.target.value) })} />
+                  <input type="number" min={0} max={100} value={form.progress_percentage} readOnly className="readonly-input" />
                 </div>
-                <div className="form-field">
-                  <label>Due Date</label>
-                  <input type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })} />
-                </div>
+              </div>
+              <div className="form-field">
+                <label>Due Date</label>
+                <input type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })} />
               </div>
               <div className="form-field">
                 <label>Remarks</label>

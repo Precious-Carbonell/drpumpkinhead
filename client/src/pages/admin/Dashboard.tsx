@@ -6,11 +6,18 @@ import './Admin.css';
 const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface Stats { total: number; active: number; completed: number; pending: number; revenue: number; }
-interface Commission { id: number; commission_status: string; payment_status: string; price: number; commission_type: string; date_created: string; }
+interface Commission { id: number; commission_status: string; payment_type: string; price: number; commission_type: string; date_created: string; }
 interface AuditEntry { id: number; action: string; entity: string; entity_id: number; details: string; created_at: string; }
 
 const COLORS = ['#e8789a', '#7a9e6a', '#d4a574', '#b8c9a3', '#f4a4b8', '#f8c8d4'];
 type TimeFilter = 'daily' | 'weekly' | 'monthly';
+
+// Revenue logic: half payment = price/2, full on completed
+function getRevenue(c: Commission): number {
+  if (c.commission_status === 'Completed') return c.price;
+  if (c.payment_type === 'Half') return c.price / 2;
+  return c.price;
+}
 
 function groupByPeriod(items: Commission[], period: TimeFilter, field: 'count' | 'revenue') {
   const grouped: Record<string, number> = {};
@@ -24,7 +31,7 @@ function groupByPeriod(items: Commission[], period: TimeFilter, field: 'count' |
     } else if (period === 'monthly') {
       key = c.date_created.slice(0, 7);
     }
-    grouped[key] = (grouped[key] || 0) + (field === 'count' ? 1 : (c.price || 0));
+    grouped[key] = (grouped[key] || 0) + (field === 'count' ? 1 : getRevenue(c));
   });
   return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
 }
@@ -80,8 +87,8 @@ export default function Dashboard() {
   commissions.forEach(c => { statusCounts[c.commission_status] = (statusCounts[c.commission_status] || 0) + 1; });
   const pieData = Object.entries(statusCounts).map(([name, value]) => ({ name, value }));
 
-  const paidCommissions = commissions.filter(c => c.payment_status === 'Paid');
-  const revenueData = groupByPeriod(paidCommissions, revenueFilter, 'revenue');
+  // Revenue: all commissions contribute (half=price/2, completed=full)
+  const revenueData = groupByPeriod(commissions, revenueFilter, 'revenue');
   const requestsData = groupByPeriod(commissions, requestsFilter, 'count');
 
   function getAuditIcon(action: string) {
