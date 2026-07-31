@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { FileText, Clock, CheckCircle, AlertCircle, DollarSign, Plus, Pencil, Trash2, RefreshCw } from 'lucide-react';
+import { FileText, Clock, CheckCircle, AlertCircle, DollarSign, Plus, Pencil, Trash2, RefreshCw, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PieChart, Pie, Cell, BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './Admin.css';
 
@@ -13,6 +13,7 @@ const COLORS = ['#e8789a', '#7a9e6a', '#d4a574', '#b8c9a3', '#f4a4b8', '#f8c8d4'
 type RangeFilter = 'today' | 'week' | 'month' | 'year' | 'custom';
 
 function getRevenue(c: Commission): number {
+  if (c.commission_status === 'Waitlisted') return 0;
   if (c.commission_status === 'Completed') return c.price;
   if (c.payment_type === 'Half') return c.price / 2;
   return c.price;
@@ -50,6 +51,8 @@ export default function Dashboard() {
   const [commissions, setCommissions] = useState<Commission[]>([]);
   const [auditLog, setAuditLog] = useState<AuditEntry[]>([]);
   const [auditPage, setAuditPage] = useState(0);
+  const [statModal, setStatModal] = useState<string | null>(null);
+  const [statModalPage, setStatModalPage] = useState(0);
 
   // Filters
   const [revenueRange, setRevenueRange] = useState<RangeFilter>('month');
@@ -92,11 +95,11 @@ export default function Dashboard() {
   })();
 
   const statCards = [
-    { label: 'Total', value: stats.total, icon: <FileText size={18} />, color: '#e8789a' },
-    { label: 'Active', value: stats.active, icon: <Clock size={18} />, color: '#7a9e6a' },
-    { label: 'Completed', value: stats.completed, icon: <CheckCircle size={18} />, color: '#b8c9a3' },
-    { label: 'Pending', value: stats.pending, icon: <AlertCircle size={18} />, color: '#d4a574' },
-    { label: 'Revenue', value: `₱${stats.revenue.toLocaleString()}`, icon: <DollarSign size={18} />, color: '#f4a4b8' },
+    { label: 'Total', value: stats.total, icon: <FileText size={18} />, color: '#e8789a', filter: 'all' },
+    { label: 'Active', value: stats.active, icon: <Clock size={18} />, color: '#7a9e6a', filter: 'active' },
+    { label: 'Completed', value: stats.completed, icon: <CheckCircle size={18} />, color: '#b8c9a3', filter: 'completed' },
+    { label: 'Waitlisted', value: stats.pending, icon: <AlertCircle size={18} />, color: '#d4a574', filter: 'waitlisted' },
+    { label: 'Revenue', value: `₱${stats.revenue.toLocaleString()}`, icon: <DollarSign size={18} />, color: '#f4a4b8', filter: 'revenue' },
   ];
 
   // Status pie (no filter)
@@ -167,7 +170,7 @@ export default function Dashboard() {
 
       <div className="stats-grid compact">
         {statCards.map(card => (
-          <div key={card.label} className="stat-card" style={{ '--accent': card.color } as React.CSSProperties}>
+          <div key={card.label} className="stat-card clickable" style={{ '--accent': card.color } as React.CSSProperties} onClick={() => { setStatModal(card.filter); setStatModalPage(0); }}>
             <div className="stat-icon">{card.icon}</div>
             <div className="stat-info">
               <span className="stat-value">{card.value}</span>
@@ -303,6 +306,58 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Stat Card Modal */}
+      {statModal && (() => {
+        let filtered: Commission[] = [];
+        let title = '';
+        if (statModal === 'all') { filtered = commissions; title = 'All Commissions'; }
+        else if (statModal === 'active') { filtered = commissions.filter(c => ['Sketching', 'Coloring', 'Rendering'].includes(c.commission_status)); title = 'Active Commissions'; }
+        else if (statModal === 'completed') { filtered = commissions.filter(c => c.commission_status === 'Completed'); title = 'Completed Commissions'; }
+        else if (statModal === 'waitlisted') { filtered = commissions.filter(c => c.commission_status === 'Waitlisted'); title = 'Waitlisted Commissions'; }
+        else if (statModal === 'revenue') { filtered = commissions.filter(c => c.commission_status !== 'Waitlisted'); title = 'Revenue Records'; }
+
+        const totalPages = Math.max(1, Math.ceil(filtered.length / 5));
+        const paginated = filtered.slice(statModalPage * 5, statModalPage * 5 + 5);
+
+        return (
+          <div className="modal-overlay" onClick={() => setStatModal(null)}>
+            <div className="modal-card wide" onClick={e => e.stopPropagation()}>
+              <div className="modal-header">
+                <h3>{title} ({filtered.length})</h3>
+                <button onClick={() => setStatModal(null)}><X size={18} /></button>
+              </div>
+              <div className="modal-body" style={{ padding: 0 }}>
+                <table className="admin-table">
+                  <thead>
+                    <tr><th>Q#</th><th>Client</th><th>Type</th><th>Price</th><th>Status</th><th>Created</th></tr>
+                  </thead>
+                  <tbody>
+                    {paginated.map(c => (
+                      <tr key={c.id}>
+                        <td>{c.id}</td>
+                        <td>{c.commission_type}</td>
+                        <td>{c.mode_of_payment}</td>
+                        <td>₱{c.price}</td>
+                        <td><span className="badge">{c.commission_status}</span></td>
+                        <td>{c.date_created || '—'}</td>
+                      </tr>
+                    ))}
+                    {paginated.length === 0 && <tr><td colSpan={6} style={{ textAlign: 'center', padding: '1.5rem', color: 'var(--color-text-muted)' }}>No records</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+              {totalPages > 1 && (
+                <div className="modal-footer" style={{ justifyContent: 'center' }}>
+                  <button className="pagination-btn" disabled={statModalPage === 0} onClick={() => setStatModalPage(p => p - 1)}><ChevronLeft size={14} /> Prev</button>
+                  <span className="pagination-info">Page {statModalPage + 1} of {totalPages}</span>
+                  <button className="pagination-btn" disabled={statModalPage + 1 >= totalPages} onClick={() => setStatModalPage(p => p + 1)}>Next <ChevronRight size={14} /></button>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

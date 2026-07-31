@@ -48,10 +48,11 @@ router.get('/dashboard/stats', async (req, res) => {
   const { count: total } = await supabase.from('commissions').select('*', { count: 'exact', head: true });
   const { count: active } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).in('commission_status', ['Sketching', 'Coloring', 'Rendering']);
   const { count: completed } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).eq('commission_status', 'Completed');
-  const { count: pending } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).eq('commission_status', 'Queued');
+  const { count: pending } = await supabase.from('commissions').select('*', { count: 'exact', head: true }).eq('commission_status', 'Waitlisted');
 
   const { data: allComms } = await supabase.from('commissions').select('price, payment_type, commission_status');
   const revenue = (allComms || []).reduce((sum, r) => {
+    if (r.commission_status === 'Waitlisted') return sum;
     if (r.commission_status === 'Completed') return sum + (r.price || 0);
     if (r.payment_type === 'Half') return sum + ((r.price || 0) / 2);
     return sum + (r.price || 0);

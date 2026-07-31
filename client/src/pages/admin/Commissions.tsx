@@ -5,46 +5,31 @@ import './Admin.css';
 const API_URL = import.meta.env.VITE_API_URL || '';
 function getToken() { return localStorage.getItem('token') || ''; }
 
-// Status -> Progress mapping
 const STATUS_PROGRESS: Record<string, number> = {
-  'Waitlisted': 0,
-  'Queued': 0,
-  'Sketching': 25,
-  'Coloring': 60,
-  'Rendering': 85,
-  'Completed': 100,
+  'Waitlisted': 0, 'Queued': 0, 'Sketching': 25, 'Coloring': 60, 'Rendering': 85, 'Completed': 100,
 };
 
-// Auto due date: 1 week from today
 function getDefaultDueDate() {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
+  const d = new Date(); d.setDate(d.getDate() + 7);
   return d.toISOString().split('T')[0];
 }
 
+function getToday() { return new Date().toISOString().split('T')[0]; }
+
 interface Commission {
-  id: number;
-  client_id: number;
-  client_name: string;
-  queue_number: number;
-  commission_type: string;
-  price: number;
-  mode_of_payment: string;
-  payment_type: string;
-  commission_status: string;
-  progress_percentage: number;
-  date_created: string;
-  due_date: string;
-  remarks: string;
+  id: number; client_id: number; client_name: string; queue_number: number;
+  commission_type: string; price: number; mode_of_payment: string; payment_type: string;
+  commission_status: string; progress_percentage: number; date_created: string; due_date: string; remarks: string;
 }
 
 interface Client { id: number; full_name: string; }
 interface PriceOption { id: number; category: string; commission_type: string; price_php: number; }
 
 const emptyForm = {
-  client_id: 0, queue_number: 0, commission_type: '', price: 0,
+  client_id: 0, queue_number: 0, commission_type: '', customType: '', price: 0,
   mode_of_payment: '', payment_type: '',
-  commission_status: 'Queued', progress_percentage: 0, due_date: getDefaultDueDate(), remarks: '',
+  commission_status: 'Queued', progress_percentage: 0, due_date: getDefaultDueDate(),
+  date_created: getToday(), remarks: '',
 };
 
 export default function Commissions() {
@@ -54,6 +39,7 @@ export default function Commissions() {
   const [showModal, setShowModal] = useState(false);
   const [editId, setEditId] = useState<number | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [useCustomType, setUseCustomType] = useState(false);
 
   const headers = { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` };
 
@@ -65,14 +51,18 @@ export default function Commissions() {
 
   useEffect(load, []);
 
-  const openNew = () => { setEditId(null); setForm(emptyForm); setShowModal(true); };
+  const openNew = () => { setEditId(null); setForm(emptyForm); setUseCustomType(false); setShowModal(true); };
   const openEdit = (c: Commission) => {
     setEditId(c.id);
+    const isPreset = priceOptions.some(p => `${p.category} - ${p.commission_type}` === c.commission_type);
+    setUseCustomType(!isPreset);
     setForm({
-      client_id: c.client_id, queue_number: c.queue_number, commission_type: c.commission_type,
+      client_id: c.client_id, queue_number: c.queue_number,
+      commission_type: isPreset ? c.commission_type : '__custom__',
+      customType: isPreset ? '' : c.commission_type,
       price: c.price, mode_of_payment: c.mode_of_payment, payment_type: c.payment_type,
-      commission_status: c.commission_status,
-      progress_percentage: c.progress_percentage, due_date: c.due_date || '', remarks: c.remarks || '',
+      commission_status: c.commission_status, progress_percentage: c.progress_percentage,
+      due_date: c.due_date || '', date_created: c.date_created || getToday(), remarks: c.remarks || '',
     });
     setShowModal(true);
   };
@@ -82,9 +72,11 @@ export default function Commissions() {
   };
 
   const handleSave = async () => {
+    const finalType = useCustomType ? form.customType : form.commission_type;
+    const payload = { ...form, commission_type: finalType };
     const url = editId ? `${API_URL}/api/commissions/${editId}` : `${API_URL}/api/commissions`;
     const method = editId ? 'PUT' : 'POST';
-    await fetch(url, { method, headers, body: JSON.stringify(form) });
+    await fetch(url, { method, headers, body: JSON.stringify(payload) });
     setShowModal(false);
     load();
   };
@@ -95,8 +87,8 @@ export default function Commissions() {
     load();
   };
 
-  // Revenue display: half payment = price/2, full on completed
   const getDisplayRevenue = (c: Commission) => {
+    if (c.commission_status === 'Waitlisted') return 0;
     if (c.commission_status === 'Completed') return c.price;
     if (c.payment_type === 'Half') return c.price / 2;
     return c.price;
@@ -163,23 +155,28 @@ export default function Commissions() {
               <div className="form-row">
                 <div className="form-field">
                   <label>Commission Type *</label>
-                  <select
-                    value={form.commission_type}
-                    onChange={e => {
-                      const selected = priceOptions.find(p => `${p.category} - ${p.commission_type}` === e.target.value);
-                      setForm({
-                        ...form,
-                        commission_type: e.target.value,
-                        price: selected ? selected.price_php : form.price,
-                      });
-                    }}
-                  >
-                    <option value="">Select type...</option>
-                    {priceOptions.map(p => {
-                      const label = `${p.category} - ${p.commission_type}`;
-                      return <option key={p.id} value={label}>{label} (₱{p.price_php})</option>;
-                    })}
-                  </select>
+                  {!useCustomType ? (
+                    <select
+                      value={form.commission_type}
+                      onChange={e => {
+                        if (e.target.value === '__custom__') { setUseCustomType(true); setForm({ ...form, commission_type: '__custom__' }); return; }
+                        const selected = priceOptions.find(p => `${p.category} - ${p.commission_type}` === e.target.value);
+                        setForm({ ...form, commission_type: e.target.value, price: selected ? selected.price_php : form.price });
+                      }}
+                    >
+                      <option value="">Select type...</option>
+                      {priceOptions.map(p => {
+                        const label = `${p.category} - ${p.commission_type}`;
+                        return <option key={p.id} value={label}>{label} (₱{p.price_php})</option>;
+                      })}
+                      <option value="__custom__">— Custom —</option>
+                    </select>
+                  ) : (
+                    <div className="custom-type-row">
+                      <input placeholder="Enter custom type" value={form.customType} onChange={e => setForm({ ...form, customType: e.target.value })} />
+                      <button type="button" className="filter-btn" onClick={() => { setUseCustomType(false); setForm({ ...form, commission_type: '', customType: '' }); }}>Back</button>
+                    </div>
+                  )}
                 </div>
                 <div className="form-field">
                   <label>Price (₱) *</label>
@@ -221,9 +218,15 @@ export default function Commissions() {
                   <input type="number" min={0} max={100} value={form.progress_percentage} readOnly className="readonly-input" />
                 </div>
               </div>
-              <div className="form-field">
-                <label>Due Date</label>
-                <input type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })} />
+              <div className="form-row">
+                <div className="form-field">
+                  <label>Date Created</label>
+                  <input type="date" value={form.date_created} onChange={e => setForm({ ...form, date_created: e.target.value })} />
+                </div>
+                <div className="form-field">
+                  <label>Due Date</label>
+                  <input type="date" value={form.due_date} onChange={e => setForm({ ...form, due_date: e.target.value })} />
+                </div>
               </div>
               <div className="form-field">
                 <label>Remarks</label>
