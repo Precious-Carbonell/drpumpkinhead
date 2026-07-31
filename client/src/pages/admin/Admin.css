@@ -588,9 +588,10 @@
 
 .dashboard-right {
   min-width: 0;
-  display: grid;
-  grid-template-rows: 1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-md);
+  align-self: start;
 }
 
 /* ===========================
@@ -656,11 +657,9 @@
 }
 
 .audit-list {
-  flex: 1;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .audit-item {
