@@ -38,9 +38,10 @@ export default function Queue() {
       .catch(() => setLoading(false));
   }, []);
 
-  const activeCount = commissions.filter(
-    c => c.commissionStatus.toLowerCase().includes('progress') || c.commissionStatus.toLowerCase().includes('sketch')
-  ).length;
+  const activeCount = commissions.filter(c => {
+    const s = c.commissionStatus.toLowerCase();
+    return s.includes('sketch') || s.includes('coloring') || s.includes('rendering');
+  }).length;
 
   return (
     <main className="queue-page">
