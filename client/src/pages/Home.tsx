@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Palette, ArrowRight, Users, ExternalLink } from 'lucide-react';
+import { Palette, ArrowRight, Users, ExternalLink, X } from 'lucide-react';
 import clipVideo from '../assets/clip.mp4';
 import './Home.css';
 
@@ -33,6 +33,8 @@ function useParallax() {
 
 export default function Home() {
   const setParallaxRef = useParallax();
+  const [showAlphaModal, setShowAlphaModal] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
 
   return (
     <main>
@@ -68,10 +70,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="hero-scroll-indicator">
-          <div className="scroll-line" />
-        </div>
       </section>
 
       {/* About Section */}
@@ -82,7 +80,9 @@ export default function Home() {
         </div>
         <div className="container">
           <div className="about-content">
+          <div className="about-avatar-wrapper" onClick={() => setShowAlphaModal(true)}>
             <img src="/avatar.png" alt="DrPumpkinHead avatar" className="about-avatar" ref={setParallaxRef(0)} />
+          </div>
             <div className="about-text" ref={setParallaxRef(1)}>
               <img src="/aboutme.png" alt="About Me" className="aboutme-heading-img" />
               <p>
@@ -131,6 +131,36 @@ export default function Home() {
           </div>
         </div>
       </section>
+      {/* Alpha Modal */}
+      {showAlphaModal && (
+        <div className="alpha-modal-overlay" onClick={() => setShowAlphaModal(false)}>
+          <div className="alpha-modal" onClick={e => e.stopPropagation()}>
+            <button className="alpha-modal-close" onClick={() => setShowAlphaModal(false)}>
+              <X size={18} />
+            </button>
+            <h3>Do you want to see my alpha side?</h3>
+            <div className="alpha-modal-actions">
+              <button className="btn btn-primary" onClick={() => { setShowAlphaModal(false); setShowVideo(true); }}>Yes</button>
+              <button className="btn btn-primary" onClick={() => { setShowAlphaModal(false); setShowVideo(true); }}>Definitely</button>
+              <button className="btn btn-primary" onClick={() => { setShowAlphaModal(false); setShowVideo(true); }}>Absolutely</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Alpha Video Player */}
+      {showVideo && (
+        <div className="alpha-modal-overlay" onClick={() => setShowVideo(false)}>
+          <div className="alpha-video-modal" onClick={e => e.stopPropagation()}>
+            <button className="alpha-modal-close" onClick={() => setShowVideo(false)}>
+              <X size={18} />
+            </button>
+            <video autoPlay controls className="alpha-video">
+              <source src="/chud.mp4" type="video/mp4" />
+            </video>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

@@ -136,8 +136,8 @@ export default function Queue() {
         <p><strong>How the queue works:</strong></p>
         <ul>
           <li><strong>Waitlisted</strong> - On the list, but work hasn't started yet (awaiting payment)</li>
-          <li><strong>Queued</strong> - Payment confirmed, but hasn't been started yet.</li>
-          <li><strong>Sketching → Coloring → Rendering</strong> - Actively being worked on.</li>
+          <li><strong>Queued</strong> - Payment confirmed, but hasn't been started yet</li>
+          <li><strong>Sketching → Coloring → Rendering</strong> - Actively being worked on</li>
         </ul>
         <p>
           <strong>Privacy note:</strong> Names are masked for privacy.

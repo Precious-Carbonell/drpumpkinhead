@@ -1,8 +1,10 @@
 .footer {
-  background: linear-gradient(180deg, var(--color-cream) 0%, var(--color-pale-pink) 100%);
-  border-top: 1px solid rgba(248, 200, 212, 0.3);
+  background: linear-gradient(180deg, var(--color-soft-green) 0%, var(--color-mint) 100%);
+  border-top: 1px solid rgba(184, 201, 163, 0.4);
   padding: var(--space-3xl) 0 var(--space-lg);
-  margin-top: var(--space-4xl);
+  margin-top: 0;
+  position: relative;
+  z-index: 10;
 }
 
 .footer-container {
@@ -10,7 +12,7 @@
   margin: 0 auto;
   padding: 0 var(--space-lg);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
   gap: var(--space-2xl);
 }
 
@@ -20,21 +22,16 @@
   gap: var(--space-sm);
 }
 
-.footer-icon {
-  color: var(--color-rose);
-}
-
-.footer-name {
-  font-family: var(--font-heading);
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--color-text);
+.footer-logo {
+  width: 120px;
+  height: auto;
 }
 
 .footer-tagline {
   font-size: 0.9rem;
-  color: var(--color-text-muted);
+  color: var(--color-text-light);
   max-width: 280px;
+  margin-top: var(--space-xs);
 }
 
 .footer-links {
@@ -53,11 +50,12 @@
 .footer-links a {
   color: var(--color-text-light);
   font-size: 0.9rem;
-  transition: var(--transition-fast);
+  text-decoration: none;
+  transition: color var(--transition-fast), padding-left var(--transition-fast);
 }
 
 .footer-links a:hover {
-  color: var(--color-deep-rose);
+  color: var(--color-deep-sage);
   padding-left: 4px;
 }
 
@@ -65,7 +63,7 @@
   max-width: var(--max-width);
   margin: var(--space-2xl) auto 0;
   padding: var(--space-lg) var(--space-lg) 0;
-  border-top: 1px solid rgba(248, 200, 212, 0.2);
+  border-top: 1px solid rgba(122, 158, 106, 0.25);
   text-align: center;
 }
 
@@ -79,8 +77,8 @@
 }
 
 .heart-icon {
-  color: var(--color-rose);
-  fill: var(--color-rose);
+  color: var(--color-deep-rose);
+  fill: var(--color-deep-rose);
 }
 
 @media (max-width: 768px) {
@@ -92,6 +90,10 @@
 
   .footer-brand {
     align-items: center;
+  }
+
+  .footer-logo {
+    width: 100px;
   }
 
   .footer-tagline {

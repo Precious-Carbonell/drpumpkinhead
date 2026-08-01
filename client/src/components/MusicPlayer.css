@@ -1,0 +1,103 @@
+/* ===========================
+   MUSIC PLAYER FLOATING BUTTON
+   =========================== */
+.music-player {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 9000;
+}
+
+.music-toggle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--color-rose);
+  background: var(--color-soft-pink);
+  color: var(--color-deep-rose);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: var(--shadow-soft);
+  transition: background var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.music-toggle:hover {
+  background: var(--color-rose);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: var(--shadow-medium);
+}
+
+/* Volume slider */
+.music-slider-wrapper {
+  background: white;
+  border: 1px solid rgba(248, 200, 212, 0.3);
+  border-radius: 20px;
+  padding: 12px 8px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.music-slider {
+  writing-mode: vertical-lr;
+  direction: rtl;
+  width: 6px;
+  height: 90px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.music-slider::-webkit-slider-runnable-track {
+  width: 6px;
+  border-radius: 3px;
+  background: var(--color-sage);
+}
+
+.music-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-deep-rose);
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(232, 120, 154, 0.4);
+  margin-left: -4px;
+}
+
+.music-slider::-moz-range-track {
+  width: 6px;
+  border-radius: 3px;
+  background: var(--color-sage);
+}
+
+.music-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--color-deep-rose);
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(232, 120, 154, 0.4);
+}
+
+@media (max-width: 768px) {
+  .music-player {
+    bottom: 16px;
+    right: 16px;
+  }
+
+  .music-toggle {
+    width: 42px;
+    height: 42px;
+  }
+}

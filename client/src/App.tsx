@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
+import Footer from './components/Footer';
 import ParallaxBackground from './components/ParallaxBackground';
 import PetalParticles from './components/PetalParticles';
+import MusicPlayer from './components/MusicPlayer';
 import Home from './pages/Home';
 import PriceList from './pages/PriceList';
 import Queue from './pages/Queue';
@@ -20,10 +22,10 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Public client routes */}
-        <Route path="/" element={<><ParallaxBackground /><PetalParticles /><Navbar /><Home /></>} />
-        <Route path="/prices" element={<><ParallaxBackground /><PetalParticles /><Navbar /><PriceList /></>} />
-        <Route path="/queue" element={<><ParallaxBackground /><PetalParticles /><Navbar /><Queue /></>} />
-        <Route path="/socials" element={<><ParallaxBackground /><PetalParticles /><Navbar /><Socials /></>} />
+        <Route path="/" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><Home /><Footer /></>} />
+        <Route path="/prices" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><PriceList /><Footer /></>} />
+        <Route path="/queue" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><Queue /><Footer /></>} />
+        <Route path="/socials" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><Socials /><Footer /></>} />
 
         {/* Admin routes */}
         <Route path="/admin/login" element={<AdminLogin />} />
