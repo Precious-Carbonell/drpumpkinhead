@@ -202,12 +202,24 @@
   background: rgba(232, 240, 224, 0.4);
   border-radius: var(--radius-lg);
   border: 1px solid rgba(184, 201, 163, 0.3);
-  text-align: center;
+  text-align: left;
 }
 
 .queue-note p {
   font-size: 0.85rem;
   color: var(--color-text-light);
+}
+
+.queue-note ul {
+  margin: 0.5rem 0;
+  padding-left: 1.2rem;
+  list-style: disc;
+}
+
+.queue-note li {
+  font-size: 0.85rem;
+  color: var(--color-text-light);
+  margin-bottom: 0.3rem;
 }
 
 .queue-note strong {
