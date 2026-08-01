@@ -82,6 +82,7 @@ export default function Home() {
           <div className="about-content">
           <div className="about-avatar-wrapper" onClick={() => setShowAlphaModal(true)}>
             <img src="/avatar.png" alt="DrPumpkinHead avatar" className="about-avatar" ref={setParallaxRef(0)} />
+            <img src="/clickme.png" alt="Click me!" className="about-clickme" />
           </div>
             <div className="about-text" ref={setParallaxRef(1)}>
               <img src="/aboutme.png" alt="About Me" className="aboutme-heading-img" />

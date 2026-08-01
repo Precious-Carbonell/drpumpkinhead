@@ -36,7 +36,7 @@ export default function Footer() {
 
       <div className="footer-bottom">
         <p>
-          Made with <Heart size={14} className="heart-icon" /> by DrPumpkinHead &copy; {new Date().getFullYear()}
+          Made with love by DrPumpkinHead &copy; {new Date().getFullYear()}
         </p>
       </div>
     </footer>
