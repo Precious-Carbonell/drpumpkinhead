@@ -14,6 +14,11 @@ export default function Navbar() {
     { path: '/socials', label: 'Socials' },
   ];
 
+  const handleNavClick = () => {
+    setIsOpen(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-container">
@@ -26,12 +31,16 @@ export default function Navbar() {
         </button>
 
         <ul className={`navbar-links ${isOpen ? 'active' : ''}`}>
+          {/* Mobile logo */}
+          <li className="mobile-nav-brand">
+            <img src="/icon.png" alt="DrPumpkinHead" className="mobile-nav-logo" />
+          </li>
           {navLinks.map((link) => (
             <li key={link.path}>
               <Link
                 to={link.path}
                 className={`nav-link ${location.pathname === link.path ? 'active' : ''}`}
-                onClick={() => setIsOpen(false)}
+                onClick={handleNavClick}
               >
                 {link.label}
               </Link>
@@ -39,6 +48,9 @@ export default function Navbar() {
           ))}
         </ul>
       </div>
+
+      {/* Mobile overlay backdrop */}
+      {isOpen && <div className="navbar-backdrop" onClick={() => setIsOpen(false)} />}
     </nav>
   );
 }

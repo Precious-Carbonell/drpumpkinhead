@@ -88,7 +88,7 @@ export default function Home() {
               <img src="/aboutme.png" alt="About Me" className="aboutme-heading-img" />
               <p>
                 Hi, I'm Rits! I think I can draw but you never really know unless you explore
-                this website or stalk my account. Anyway, internship just started and were also
+                this website or stalk my account. Anyway, internship just started and we're also
                 working on our thesis so, I need funds like every struggling college student.
                 Look around if you'd like!
               </p>

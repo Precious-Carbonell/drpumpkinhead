@@ -1,7 +1,15 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './Footer.css';
 
 export default function Footer() {
+  const navigate = useNavigate();
+
+  const handleNav = (path: string) => (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(path);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   return (
     <footer className="footer">
       <div className="footer-container">
@@ -12,16 +20,16 @@ export default function Footer() {
 
         <div className="footer-links">
           <h4>Navigate</h4>
-          <Link to="/">Home</Link>
-          <Link to="/prices">Price List</Link>
-          <Link to="/queue">Queue</Link>
-          <Link to="/socials">Socials</Link>
+          <Link to="/" onClick={handleNav('/')}>Home</Link>
+          <Link to="/prices" onClick={handleNav('/prices')}>Price List</Link>
+          <Link to="/queue" onClick={handleNav('/queue')}>Queue</Link>
+          <Link to="/socials" onClick={handleNav('/socials')}>Socials</Link>
         </div>
 
         <div className="footer-links">
           <h4>Commission</h4>
-          <Link to="/prices">View Pricing</Link>
-          <Link to="/queue">Check Queue Status</Link>
+          <Link to="/prices" onClick={handleNav('/prices')}>View Pricing</Link>
+          <Link to="/queue" onClick={handleNav('/queue')}>Check Queue Status</Link>
         </div>
 
         <div className="footer-links">
