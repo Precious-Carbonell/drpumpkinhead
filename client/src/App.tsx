@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ParallaxBackground from './components/ParallaxBackground';
 import PetalParticles from './components/PetalParticles';
+import CursorPetals from './components/CursorPetals';
 import MusicPlayer from './components/MusicPlayer';
 import Home from './pages/Home';
 import PriceList from './pages/PriceList';
@@ -22,10 +23,10 @@ export default function App() {
     <BrowserRouter>
       <Routes>
         {/* Public client routes */}
-        <Route path="/" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><Home /><Footer /></>} />
-        <Route path="/prices" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><PriceList /><Footer /></>} />
-        <Route path="/queue" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><Queue /><Footer /></>} />
-        <Route path="/socials" element={<><ParallaxBackground /><PetalParticles /><Navbar /><MusicPlayer /><Socials /><Footer /></>} />
+        <Route path="/" element={<><ParallaxBackground /><PetalParticles /><CursorPetals /><Navbar /><MusicPlayer /><Home /><Footer /></>} />
+        <Route path="/prices" element={<><ParallaxBackground /><PetalParticles /><CursorPetals /><Navbar /><MusicPlayer /><PriceList /><Footer /></>} />
+        <Route path="/queue" element={<><ParallaxBackground /><PetalParticles /><CursorPetals /><Navbar /><MusicPlayer /><Queue /><Footer /></>} />
+        <Route path="/socials" element={<><ParallaxBackground /><PetalParticles /><CursorPetals /><Navbar /><MusicPlayer /><Socials /><Footer /></>} />
 
         {/* Admin routes */}
         <Route path="/admin/login" element={<AdminLogin />} />

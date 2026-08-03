@@ -1,0 +1,35 @@
+.cursor-petals-container {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  overflow: hidden;
+}
+
+.cursor-petal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 12px;
+  height: 12px;
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+
+/* Petal shape variants using CSS */
+.cursor-petal.petal-shape-0 {
+  background: var(--color-rose);
+  border-radius: 50% 0 50% 50%;
+}
+
+.cursor-petal.petal-shape-1 {
+  background: var(--color-blush);
+  border-radius: 50% 50% 0 50%;
+}
+
+.cursor-petal.petal-shape-2 {
+  background: var(--color-soft-pink);
+  border-radius: 0 50% 50% 50%;
+  width: 10px;
+  height: 14px;
+}
