@@ -329,6 +329,7 @@
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
+  white-space: nowrap;
 }
 
 /* ===========================
@@ -383,6 +384,15 @@
 
   .deco-blob {
     opacity: 0.15;
+  }
+
+  .portfolio-cta {
+    bottom: 4%;
+  }
+
+  .portfolio-cta .btn {
+    font-size: 0.85rem;
+    padding: 12px 20px;
   }
 
 }
