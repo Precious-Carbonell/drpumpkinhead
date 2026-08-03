@@ -62,6 +62,7 @@ export default function Commissions() {
   // Pagination & Filters
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
+  const [viewMode, setViewMode] = useState<'all' | 'completed' | 'ongoing'>('all');
   const [filterType, setFilterType] = useState<string[]>([]);
   const [filterStatus, setFilterStatus] = useState<string[]>([]);
   const [filterPayment, setFilterPayment] = useState<string[]>([]);
@@ -90,6 +91,13 @@ export default function Commissions() {
   // Filtered + searched data
   const filtered = useMemo(() => {
     let result = rows;
+
+    // View mode filter
+    if (viewMode === 'completed') {
+      result = result.filter(c => c.commission_status === 'Completed');
+    } else if (viewMode === 'ongoing') {
+      result = result.filter(c => c.commission_status !== 'Completed');
+    }
 
     // Global search (Client + Type)
     if (search.trim()) {
@@ -133,13 +141,13 @@ export default function Commissions() {
     }
 
     return result;
-  }, [rows, search, filterType, filterStatus, filterPayment, filterPriceMin, filterPriceMax, filterProgress, filterDueStart, filterDueEnd, filterCreatedStart, filterCreatedEnd]);
+  }, [rows, search, viewMode, filterType, filterStatus, filterPayment, filterPriceMin, filterPriceMax, filterProgress, filterDueStart, filterDueEnd, filterCreatedStart, filterCreatedEnd]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice(page * PAGE_SIZE, page * PAGE_SIZE + PAGE_SIZE);
 
   // Reset page when filters/search change
-  useEffect(() => { setPage(0); }, [search, filterType, filterStatus, filterPayment, filterPriceMin, filterPriceMax, filterProgress, filterDueStart, filterDueEnd, filterCreatedStart, filterCreatedEnd]);
+  useEffect(() => { setPage(0); }, [search, viewMode, filterType, filterStatus, filterPayment, filterPriceMin, filterPriceMax, filterProgress, filterDueStart, filterDueEnd, filterCreatedStart, filterCreatedEnd]);
 
   const openNew = () => { setEditId(null); setForm(emptyForm); setUseCustomType(false); setShowModal(true); };
   const openEdit = (c: Commission) => {
@@ -218,6 +226,8 @@ export default function Commissions() {
           />
         </div>
         <div className="toolbar-actions">
+          <button className={`filter-btn ${viewMode === 'ongoing' ? 'active' : ''}`} onClick={() => setViewMode(viewMode === 'ongoing' ? 'all' : 'ongoing')}>Ongoing</button>
+          <button className={`filter-btn ${viewMode === 'completed' ? 'active' : ''}`} onClick={() => setViewMode(viewMode === 'completed' ? 'all' : 'completed')}>Completed</button>
           <button className={`filter-btn ${showFilters ? 'active' : ''}`} onClick={() => setShowFilters(!showFilters)}>
             Filters {hasActiveFilters && <span className="filter-count">{[filterType, filterStatus, filterPayment, filterProgress].filter(a => a.length > 0).length + (filterPriceMin || filterPriceMax ? 1 : 0) + (filterDueStart || filterDueEnd ? 1 : 0) + (filterCreatedStart || filterCreatedEnd ? 1 : 0)}</span>}
           </button>

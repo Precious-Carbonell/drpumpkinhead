@@ -40,13 +40,26 @@ function filterByRange(items: Commission[], start: string, end: string) {
   });
 }
 
-function groupByDay(items: Commission[], field: 'count' | 'revenue') {
+function groupByDay(items: Commission[], field: 'count' | 'revenue', start: string, end: string) {
   const grouped: Record<string, number> = {};
+
+  // Fill all dates in range with 0
+  const current = new Date(start);
+  const endDate = new Date(end);
+  while (current <= endDate) {
+    grouped[current.toISOString().split('T')[0]] = 0;
+    current.setDate(current.getDate() + 1);
+  }
+
+  // Sum values per day
   items.forEach(c => {
     if (!c.date_created) return;
-    const key = c.date_created.slice(0, 10); // normalize to YYYY-MM-DD
-    grouped[key] = (grouped[key] || 0) + (field === 'count' ? 1 : getRevenue(c));
+    const key = c.date_created.slice(0, 10);
+    if (key in grouped) {
+      grouped[key] += field === 'count' ? 1 : getRevenue(c);
+    }
   });
+
   return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date, value }));
 }
 
@@ -114,12 +127,12 @@ export default function Dashboard() {
   // Revenue chart
   const revRange = getDateRange(revenueRange, revenueCustomStart, revenueCustomEnd);
   const revenueFiltered = filterByRange(commissions, revRange.start, revRange.end);
-  const revenueData = groupByDay(revenueFiltered, 'revenue');
+  const revenueData = groupByDay(revenueFiltered, 'revenue', revRange.start, revRange.end);
 
   // Requests chart
   const reqRange = getDateRange(requestsRange, requestsCustomStart, requestsCustomEnd);
   const requestsFiltered = filterByRange(commissions, reqRange.start, reqRange.end);
-  const requestsData = groupByDay(requestsFiltered, 'count');
+  const requestsData = groupByDay(requestsFiltered, 'count', reqRange.start, reqRange.end);
 
   // Payment method pie
   const payRange = getDateRange(paymentRange, paymentCustomStart, paymentCustomEnd);
@@ -129,7 +142,7 @@ export default function Dashboard() {
     const method = c.mode_of_payment || 'Unknown';
     paymentByMethod[method] = (paymentByMethod[method] || 0) + getRevenue(c);
   });
-  const paymentPieData = Object.entries(paymentByMethod).map(([name, value]) => ({ name: `${name} ₱${value.toLocaleString()}`, value }));
+  const paymentPieData = Object.entries(paymentByMethod).map(([name, value]) => ({ name, value }));
 
   function getAuditIcon(action: string) {
     switch (action) { case 'CREATE': return <Plus size={12} />; case 'UPDATE': return <Pencil size={12} />; case 'DELETE': return <Trash2 size={12} />; default: return <FileText size={12} />; }

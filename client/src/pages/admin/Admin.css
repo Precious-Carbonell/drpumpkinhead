@@ -1275,3 +1275,12 @@
     min-width: 100px;
   }
 }
+
+/* ===========================
+   VIEW TOGGLE BUTTONS
+   =========================== */
+.view-toggle {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
