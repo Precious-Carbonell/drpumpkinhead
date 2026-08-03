@@ -37,6 +37,7 @@ export default function Socials() {
       <div className="container">
         <div className="socials-header">
           <img src="/cone.png" alt="Connect With Me" className="socials-heading-img" />
+          <p className="socials-subtitle">Hit me up and see my projects on Facebook, Instagram, Tiktok and Youtube. Join my pack, and be an alpha wolf like me 😎</p>
         </div>
 
         <div className="socials-row">

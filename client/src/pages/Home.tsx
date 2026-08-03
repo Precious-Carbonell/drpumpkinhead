@@ -87,10 +87,10 @@ export default function Home() {
             <div className="about-text" ref={setParallaxRef(1)}>
               <img src="/aboutme.png" alt="About Me" className="aboutme-heading-img" />
               <p>
-                hi im rits! i think i can draw but you never really know unless you explore
-                this website or stalk my account. anyway internship just started and were also
-                working on our thesis so, i need funds like every struggling college student.
-                look around if youd like!
+                Hi, I'm Rits! I think I can draw but you never really know unless you explore
+                this website or stalk my account. Anyway, internship just started and were also
+                working on our thesis so, I need funds like every struggling college student.
+                Look around if you'd like!
               </p>
             </div>
           </div>
