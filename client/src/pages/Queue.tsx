@@ -139,10 +139,6 @@ export default function Queue() {
           <li><strong>Queued</strong> - Payment confirmed, but hasn't been started yet</li>
           <li><strong>Sketching → Coloring → Rendering</strong> - Actively being worked on</li>
         </ul>
-        <p>
-          <strong>Privacy note:</strong> Names are masked for privacy.
-          Only the first and last letters of each name part are shown.
-        </p>
       </div>
       
     </div>
