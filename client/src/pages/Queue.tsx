@@ -135,14 +135,14 @@ export default function Queue() {
                   <th>Commission Type</th>
                   {activeFilter !== 'waitlisted' && <th>Queue #</th>}
                   <th>Status</th>
-                  <th>Progress</th>
-                  <th>Est. Completion</th>
+                  {activeFilter !== 'waitlisted' && <th>Progress</th>}
+                  {activeFilter !== 'waitlisted' && <th>Est. Completion</th>}
                 </tr>
               </thead>
               <tbody>
                 {filteredCommissions.length === 0 ? (
                   <tr>
-                    <td colSpan={activeFilter === 'waitlisted' ? 5 : 6} className="queue-empty-row">
+                    <td colSpan={activeFilter === 'waitlisted' ? 3 : 6} className="queue-empty-row">
                       No {getFilterLabel(activeFilter)} commissions right now.
                     </td>
                   </tr>
@@ -157,26 +157,30 @@ export default function Queue() {
                           {commission.commissionStatus}
                         </span>
                       </td>
-                      <td>
-                        <div className="cell-progress">
-                          <div className="mini-progress-bar">
-                            <div
-                              className="mini-progress-fill"
-                              style={{ width: `${commission.progressPercentage}%` }}
-                            />
+                      {activeFilter !== 'waitlisted' && (
+                        <td>
+                          <div className="cell-progress">
+                            <div className="mini-progress-bar">
+                              <div
+                                className="mini-progress-fill"
+                                style={{ width: `${commission.progressPercentage}%` }}
+                              />
+                            </div>
+                            <span className="progress-text">{commission.progressPercentage}%</span>
                           </div>
-                          <span className="progress-text">{commission.progressPercentage}%</span>
-                        </div>
-                      </td>
-                      <td className="cell-date">
-                        {commission.estimatedCompletion
-                          ? new Date(commission.estimatedCompletion).toLocaleDateString('en-US', {
-                              month: 'short',
-                              day: 'numeric',
-                              year: 'numeric',
-                            })
-                          : '—'}
-                      </td>
+                        </td>
+                      )}
+                      {activeFilter !== 'waitlisted' && (
+                        <td className="cell-date">
+                          {commission.estimatedCompletion
+                            ? new Date(commission.estimatedCompletion).toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                                year: 'numeric',
+                              })
+                            : '—'}
+                        </td>
+                      )}
                     </tr>
                   ))
                 )}
