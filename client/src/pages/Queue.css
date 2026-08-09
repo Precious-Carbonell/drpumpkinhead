@@ -62,23 +62,21 @@
   outline-offset: 2px;
 }
 
-/* Hover states — pink tint for all cards */
-.queue-stat-card.stat-card-queue:hover,
-.queue-stat-card.stat-card-active:hover,
+/* Hover states — themed per card */
+.queue-stat-card.stat-card-active:hover {
+  background: rgba(232, 240, 224, 0.6);
+  border-color: rgba(184, 201, 163, 0.5);
+}
+
 .queue-stat-card.stat-card-waitlisted:hover {
-  background: rgba(253, 232, 239, 0.6);
-  border-color: rgba(248, 200, 212, 0.5);
+  background: rgba(255, 243, 224, 0.6);
+  border-color: rgba(212, 165, 116, 0.5);
 }
 
 /* Active/selected state — visibly highlighted */
 .queue-stat-card.stat-card--active {
   transform: scale(1.04);
   box-shadow: 0 4px 16px rgba(244, 164, 184, 0.25);
-}
-
-.queue-stat-card.stat-card--active.stat-card-queue {
-  background: rgba(253, 232, 239, 0.9);
-  border-color: var(--color-rose);
 }
 
 .queue-stat-card.stat-card--active.stat-card-active {

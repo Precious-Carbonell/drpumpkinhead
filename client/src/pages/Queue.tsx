@@ -52,7 +52,7 @@ function getFilterLabel(filter: FilterStatus): string {
 export default function Queue() {
   const [commissions, setCommissions] = useState<PublicCommission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<FilterStatus>('queue');
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>('active');
 
   useEffect(() => {
     fetch(`${API_URL}/api/commissions/public?_t=${Date.now()}`)
