@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Users, Clock, Hourglass, Loader } from 'lucide-react';
+import { Clock, Hourglass, Loader } from 'lucide-react';
 import './Queue.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -52,7 +52,7 @@ function getFilterLabel(filter: FilterStatus): string {
 export default function Queue() {
   const [commissions, setCommissions] = useState<PublicCommission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState<FilterStatus>(null);
+  const [activeFilter, setActiveFilter] = useState<FilterStatus>('queue');
 
   useEffect(() => {
     fetch(`${API_URL}/api/commissions/public?_t=${Date.now()}`)
@@ -63,8 +63,6 @@ export default function Queue() {
       })
       .catch(() => setLoading(false));
   }, []);
-
-  const queueCount = commissions.filter(c => c.commissionStatus.toLowerCase().includes('queue')).length;
 
   const activeCount = commissions.filter(c => {
     const s = c.commissionStatus.toLowerCase();
@@ -91,19 +89,6 @@ export default function Queue() {
         </div>
 
         <div className="queue-stats">
-          <button
-            type="button"
-            className={`queue-stat-card stat-card-queue ${activeFilter === 'queue' ? 'stat-card--active' : ''}`}
-            onClick={() => handleFilterClick('queue')}
-            aria-pressed={activeFilter === 'queue'}
-            aria-label={`Filter by In Queue. ${queueCount} commissions.`}
-          >
-            <Users size={20} />
-            <div>
-              <span className="stat-number">{queueCount}</span>
-              <span className="stat-label">In Queue</span>
-            </div>
-          </button>
           <button
             type="button"
             className={`queue-stat-card stat-card-active ${activeFilter === 'active' ? 'stat-card--active' : ''}`}
