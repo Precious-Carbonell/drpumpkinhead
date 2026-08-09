@@ -49,12 +49,58 @@
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(8px);
   border-radius: var(--radius-lg);
-  border: 1px solid rgba(248, 200, 212, 0.25);
+  border: 2px solid rgba(248, 200, 212, 0.25);
   box-shadow: var(--shadow-card);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: inherit;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.queue-stat-card:focus-visible {
+  outline: 2px solid var(--color-deep-rose);
+  outline-offset: 2px;
+}
+
+/* Hover states — pink tint for all cards */
+.queue-stat-card.stat-card-queue:hover,
+.queue-stat-card.stat-card-active:hover,
+.queue-stat-card.stat-card-waitlisted:hover {
+  background: rgba(253, 232, 239, 0.6);
+  border-color: rgba(248, 200, 212, 0.5);
+}
+
+/* Active/selected state — visibly highlighted */
+.queue-stat-card.stat-card--active {
+  transform: scale(1.04);
+  box-shadow: 0 4px 16px rgba(244, 164, 184, 0.25);
+}
+
+.queue-stat-card.stat-card--active.stat-card-queue {
+  background: rgba(253, 232, 239, 0.9);
+  border-color: var(--color-rose);
+}
+
+.queue-stat-card.stat-card--active.stat-card-active {
+  background: rgba(232, 240, 224, 0.9);
+  border-color: var(--color-deep-sage);
+}
+
+.queue-stat-card.stat-card--active.stat-card-waitlisted {
+  background: rgba(255, 243, 224, 0.9);
+  border-color: var(--color-gold);
 }
 
 .queue-stat-card svg {
   color: var(--color-deep-rose);
+}
+
+.queue-stat-card.stat-card-active svg {
+  color: var(--color-deep-sage);
+}
+
+.queue-stat-card.stat-card-waitlisted svg {
+  color: var(--color-gold);
 }
 
 .queue-stat-card div {
@@ -74,6 +120,14 @@
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* Empty filter row */
+.queue-empty-row {
+  text-align: center;
+  padding: var(--space-2xl) var(--space-lg) !important;
+  color: var(--color-text-muted);
+  font-style: italic;
 }
 
 /* Table */
