@@ -43,7 +43,6 @@ const tosItems = [
   'I can reject a comm if its too difficult',
   'The final output will be given through gdrive',
   'Strictly no refunds once work has started',
-  'Strictly no refunds once work has started',
   'Custom comms are negotiable!',
   'No rush comms since im doing my internship and thesis as well'
 ];
