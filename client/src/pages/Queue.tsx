@@ -133,7 +133,7 @@ export default function Queue() {
                 <tr>
                   <th>Client</th>
                   <th>Commission Type</th>
-                  <th>Queue #</th>
+                  {activeFilter !== 'waitlisted' && <th>Queue #</th>}
                   <th>Status</th>
                   <th>Progress</th>
                   <th>Est. Completion</th>
@@ -142,7 +142,7 @@ export default function Queue() {
               <tbody>
                 {filteredCommissions.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="queue-empty-row">
+                    <td colSpan={activeFilter === 'waitlisted' ? 5 : 6} className="queue-empty-row">
                       No {getFilterLabel(activeFilter)} commissions right now.
                     </td>
                   </tr>
@@ -151,7 +151,7 @@ export default function Queue() {
                     <tr key={index}>
                       <td className="cell-name">{commission.maskedName}</td>
                       <td>{commission.commissionType}</td>
-                      <td className="cell-queue">#{commission.queuePosition}</td>
+                      {activeFilter !== 'waitlisted' && <td className="cell-queue">#{commission.queuePosition}</td>}
                       <td>
                         <span className={`status-badge ${getStatusClass(commission.commissionStatus)}`}>
                           {commission.commissionStatus}
