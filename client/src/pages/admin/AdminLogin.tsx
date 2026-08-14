@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogIn } from 'lucide-react';
+import { LogIn, Eye, EyeOff } from 'lucide-react';
 import './Admin.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '';
@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL || '';
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ export default function AdminLogin() {
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('admin_user', data.username);
+      localStorage.setItem('login_time', Date.now().toString());
       navigate('/admin');
     } catch {
       setError('Network error');
@@ -57,7 +59,17 @@ export default function AdminLogin() {
 
           <div className="form-field" style={{ marginTop: '0.75rem' }}>
             <label htmlFor="password">Password</label>
-            <input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+            <div className="password-input-wrapper">
+              <input id="password" type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} required />
+              <button
+                type="button"
+                className="password-toggle-btn"
+                onClick={() => setShowPassword(prev => !prev)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <button type="submit" className="admin-btn primary" disabled={loading} style={{ width: '100%', marginTop: '1.25rem', justifyContent: 'center' }}>

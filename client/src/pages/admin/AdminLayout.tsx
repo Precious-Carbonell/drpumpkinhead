@@ -1,19 +1,57 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, FileText, Users, DollarSign, LogOut, Shield, ScrollText } from 'lucide-react';
 import './Admin.css';
 
+const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in ms
+
 export default function AdminLayout() {
   const navigate = useNavigate();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const logout = useCallback(() => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('admin_user');
+    localStorage.removeItem('login_time');
+    navigate('/admin/login');
+  }, [navigate]);
+
+  const resetTimer = useCallback(() => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(logout, SESSION_TIMEOUT);
+  }, [logout]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (!token) navigate('/admin/login');
-  }, [navigate]);
+    if (!token) {
+      navigate('/admin/login');
+      return;
+    }
+
+    // Check if session has already expired based on login time
+    const loginTime = localStorage.getItem('login_time');
+    if (loginTime && Date.now() - parseInt(loginTime, 10) > SESSION_TIMEOUT) {
+      logout();
+      return;
+    }
+
+    // Start inactivity timer
+    resetTimer();
+
+    // Reset timer on user activity
+    const events = ['mousedown', 'keydown', 'scroll', 'touchstart'];
+    events.forEach(event => window.addEventListener(event, resetTimer));
+
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      events.forEach(event => window.removeEventListener(event, resetTimer));
+    };
+  }, [navigate, logout, resetTimer]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('admin_user');
+    localStorage.removeItem('login_time');
     navigate('/admin/login');
   };
 
