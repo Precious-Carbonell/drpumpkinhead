@@ -137,10 +137,10 @@ export default function Dashboard() {
 
   // Stat cards
   const statCards = [
-    { label: 'Total Commissions', value: stats.total, icon: <FileText size={18} />, bg: '#f8c8d4', filter: 'all' },
-    { label: 'Active', value: stats.active, icon: <Clock size={18} />, bg: '#f4a4b8', filter: 'active' },
-    { label: 'Waitlisted', value: stats.pending, icon: <AlertCircle size={18} />, bg: '#b8c9a3', filter: 'waitlisted' },
-    { label: 'Net Revenue', value: `₱${netRevenue.toLocaleString()}`, icon: <DollarSign size={18} />, bg: '#d4e6c3', filter: 'net' },
+    { label: 'Total Commissions', value: stats.total, icon: <FileText size={18} />, bg: '#f8c8d4', filter: 'all', tooltip: 'Total number of commissions across all statuses' },
+    { label: 'Active', value: stats.active, icon: <Clock size={18} />, bg: '#f4a4b8', filter: 'active', tooltip: 'Commissions currently in progress (Sketching, Coloring, or Rendering)' },
+    { label: 'Waitlisted', value: stats.pending, icon: <AlertCircle size={18} />, bg: '#b8c9a3', filter: 'waitlisted', tooltip: 'Commissions waiting to be started' },
+    { label: 'Net Revenue', value: `₱${netRevenue.toLocaleString()}`, icon: <DollarSign size={18} />, bg: '#d4e6c3', filter: 'net', tooltip: 'Total revenue minus all recorded expenditures' },
   ];
 
   // Audit helpers
@@ -240,6 +240,7 @@ export default function Dashboard() {
             </div>
             <span className="dash-stat-card-value">{card.value}</span>
             <div className="dash-stat-card-wave"></div>
+            <span className="dash-stat-card-tooltip">{card.tooltip}</span>
           </button>
         ))}
       </div>

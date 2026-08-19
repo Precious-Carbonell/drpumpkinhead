@@ -162,8 +162,6 @@
   flex: 1;
   padding: var(--space-2xl);
   overflow-y: auto;
-  background: url('/stars.jpg') center/cover no-repeat fixed;
-  position: relative;
 }
 
 /* ===========================
@@ -1663,6 +1661,30 @@
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
+.dash-stat-card-tooltip {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(40, 30, 30, 0.85);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 400;
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
+  line-height: 1.5;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 10;
+  border-radius: 14px;
+}
+
+.dash-stat-card:hover .dash-stat-card-tooltip {
+  opacity: 1;
+}
+
 .dash-stat-card-top {
   display: flex;
   align-items: center;
@@ -2280,6 +2302,15 @@
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--color-text-light);
+}
+
+.exp-cat-gif {
+  width: 130px;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 8px;
+  align-self: center;
 }
 
 .exp-table-card {

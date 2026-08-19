@@ -161,6 +161,7 @@ export default function RevenueAllocation() {
                   </div>
                 ))}
               </div>
+              <img src="/cat.gif" alt="cat" className="exp-cat-gif" />
             </div>
           ) : <p className="chart-empty">No spending data yet</p>}
         </div>

@@ -29,6 +29,13 @@ const socialLinks = [
     image: '/links/w-yt.png',
     color: 'rgba(255, 180, 180, 0.88)',
   },
+  {
+    name: 'VGen',
+    url: 'https://vgen.co/rualryt',
+    username: '@rualryt',
+    image: '/links/w-vgen.png',
+    color: 'rgba(180, 220, 200, 0.88)',
+  },
 ];
 
 export default function Socials() {
@@ -37,7 +44,7 @@ export default function Socials() {
       <div className="container">
         <div className="socials-header">
           <img src="/cone.png" alt="Connect With Me" className="socials-heading-img" />
-          <p className="socials-subtitle">Hit me up and see my projects on Facebook, Instagram, Tiktok and Youtube. Join my pack, and be an alpha wolf like me 😎</p>
+          <p className="socials-subtitle">Hit me up and see my projects on Facebook, Instagram, Tiktok, Youtube and VGen. Join my pack, and be an alpha wolf like me 😎</p>
         </div>
 
         <div className="socials-row">
