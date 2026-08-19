@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Plus, Pencil, Trash2, X, TrendingDown, Wallet, PieChart as PieChartIcon, DollarSign, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, X, TrendingDown, Wallet, PieChart as PieChartIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './Admin.css';
 
@@ -90,7 +90,7 @@ export default function RevenueAllocation() {
     return Object.entries(weeks)
       .sort(([a], [b]) => a.localeCompare(b))
       .slice(-6)
-      .map(([date, value], i) => ({ week: `Week ${i + 1}`, value }));
+      .map(([_date, value], i) => ({ week: `Week ${i + 1}`, value }));
   })();
 
   // Pagination

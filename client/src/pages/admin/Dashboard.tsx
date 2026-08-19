@@ -43,24 +43,6 @@ function filterByRange(items: Commission[], start: string, end: string) {
   });
 }
 
-function groupByDay(items: Commission[], field: 'count' | 'revenue', start: string, end: string) {
-  const grouped: Record<string, number> = {};
-  const current = new Date(start);
-  const endDate = new Date(end);
-  while (current <= endDate) {
-    grouped[current.toISOString().split('T')[0]] = 0;
-    current.setDate(current.getDate() + 1);
-  }
-  items.forEach(c => {
-    if (!c.date_created) return;
-    const key = c.date_created.slice(0, 10);
-    if (key in grouped) {
-      grouped[key] += field === 'count' ? 1 : getRevenue(c);
-    }
-  });
-  return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, value]) => ({ date: date.slice(5), value }));
-}
-
 function detectCommPlatform(social: string): string {
   if (!social) return 'Other';
   const s = social.toLowerCase();
@@ -71,7 +53,6 @@ function detectCommPlatform(social: string): string {
 }
 
 function groupByDayPerPlatform(items: Commission[], start: string, end: string) {
-  const platforms = ['TikTok', 'VGen', 'Facebook', 'Other'];
   const grouped: Record<string, Record<string, number>> = {};
   const current = new Date(start);
   const endDate = new Date(end);
@@ -91,7 +72,7 @@ function groupByDayPerPlatform(items: Commission[], start: string, end: string) 
   return Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([date, vals]) => ({
     date: date.slice(5),
     ...vals,
-  }));
+  } as { date: string; TikTok: number; VGen: number; Facebook: number; Other: number }));
 }
 
 function formatRangeLabel(filter: RangeFilter): string {
@@ -100,14 +81,6 @@ function formatRangeLabel(filter: RangeFilter): string {
   if (start === end) return fmt(start);
   return `${fmt(start)} - ${fmt(end)}`;
 }
-
-const RANGE_SUBTITLES: Record<RangeFilter, string> = {
-  today: 'Overview of Today',
-  week: 'Overview of This Week',
-  month: 'Overview of Latest Month',
-  '3months': 'Overview of Past 3 Months',
-  year: 'Overview of This Year',
-};
 
 export default function Dashboard() {
   const [stats, setStats] = useState<Stats>({ total: 0, active: 0, completed: 0, pending: 0, revenue: 0 });
@@ -156,21 +129,8 @@ export default function Dashboard() {
   // Revenue chart
   const revRange = getDateRange(revenueRange);
   const revenueFiltered = filterByRange(commissions, revRange.start, revRange.end);
-  const revenueData = groupByDay(revenueFiltered, 'revenue', revRange.start, revRange.end);
   const revenueByPlatform = groupByDayPerPlatform(revenueFiltered, revRange.start, revRange.end);
   const rangeRevenue = revenueFiltered.reduce((sum, c) => sum + getRevenue(c), 0);
-
-  // Fixed Y axis max based on all commissions (not filtered)
-  const maxDailyRevenue = (() => {
-    const allRange = getDateRange('year');
-    const allData = groupByDayPerPlatform(commissions, allRange.start, allRange.end);
-    let max = 0;
-    allData.forEach(d => {
-      const total = (d.TikTok || 0) + (d.VGen || 0) + (d.Facebook || 0) + (d.Other || 0);
-      if (total > max) max = total;
-    });
-    return Math.ceil(max * 1.1) || 1000;
-  })();
 
   // Net
   const netRevenue = (stats.revenue || 0) - (expSummary.totalSpent || 0);
@@ -311,7 +271,7 @@ export default function Dashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(248,200,212,0.15)" />
                   <XAxis dataKey="date" tick={{ fontSize: 10, fill: '#a89494' }} axisLine={false} tickLine={false} />
                   <YAxis tick={{ fontSize: 10, fill: '#a89494' }} axisLine={false} tickLine={false} domain={[0, 3000]} ticks={[500, 1000, 2000, 3000]} />
-                  <Tooltip formatter={(value: number, name: string) => [`₱${value.toLocaleString()}`, name]} />
+                  <Tooltip formatter={(value, name) => [`₱${Number(value).toLocaleString()}`, name]} />
                   <Line type="monotone" dataKey="TikTok" stroke={SOURCE_COLORS.TikTok} strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="VGen" stroke={SOURCE_COLORS.VGen} strokeWidth={2} dot={false} />
                   <Line type="monotone" dataKey="Facebook" stroke={SOURCE_COLORS.Facebook} strokeWidth={2} dot={false} />
