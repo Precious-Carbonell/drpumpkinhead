@@ -382,6 +382,18 @@
     max-width: 400px;
   }
 
+  .hero-comop {
+    width: 100px;
+    top: -15px;
+    right: -20px;
+  }
+
+  .about-clickme {
+    width: 80px;
+    top: -5px;
+    right: -5px;
+  }
+
   .deco-blob {
     opacity: 0.15;
   }
@@ -394,7 +406,42 @@
     font-size: 0.85rem;
     padding: 12px 20px;
   }
+}
 
+@media (max-width: 480px) {
+  .hero-logo {
+    max-width: 280px;
+  }
+
+  .hero-comop {
+    width: 70px;
+    top: -10px;
+    right: -10px;
+  }
+
+  .about-clickme {
+    width: 60px;
+    top: 0;
+    right: 0;
+  }
+
+  .about-avatar {
+    max-width: 200px;
+  }
+
+  .aboutme-heading-img {
+    max-width: 260px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-actions .btn {
+    font-size: 0.85rem;
+    padding: 12px 22px;
+  }
 }
 
 /* ===========================

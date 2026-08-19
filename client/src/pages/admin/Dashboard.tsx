@@ -28,8 +28,8 @@ function getDateRange(filter: RangeFilter): { start: string; end: string } {
 
   switch (filter) {
     case 'today': return { start: fmt(today), end: fmt(today) };
-    case 'week': { const ws = new Date(today); ws.setDate(today.getDate() - today.getDay()); return { start: fmt(ws), end: fmt(today) }; }
-    case 'month': { const ms = new Date(today.getFullYear(), today.getMonth(), 1); return { start: fmt(ms), end: fmt(today) }; }
+    case 'week': { const ws = new Date(today); ws.setDate(today.getDate() - 7); return { start: fmt(ws), end: fmt(today) }; }
+    case 'month': { const ms = new Date(today); ms.setDate(today.getDate() - 30); return { start: fmt(ms), end: fmt(today) }; }
     case '3months': { const sm = new Date(today); sm.setMonth(today.getMonth() - 3); return { start: fmt(sm), end: fmt(today) }; }
     case 'year': { const ys = new Date(today.getFullYear(), 0, 1); return { start: fmt(ys), end: fmt(today) }; }
   }
