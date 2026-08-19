@@ -9,10 +9,10 @@ router.use(authenticate);
 router.get('/', async (req, res) => {
   const { data } = await supabase
     .from('commissions')
-    .select('*, clients(full_name)')
+    .select('*, clients(full_name, social_media)')
     .order('queue_number', { ascending: true });
 
-  const rows = (data || []).map(r => ({ ...r, client_name: r.clients?.full_name || '', clients: undefined }));
+  const rows = (data || []).map(r => ({ ...r, client_name: r.clients?.full_name || '', client_social: r.clients?.social_media || '', clients: undefined }));
   res.json(rows);
 });
 

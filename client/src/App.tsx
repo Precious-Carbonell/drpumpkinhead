@@ -17,6 +17,7 @@ import Clients from './pages/admin/Clients';
 import Prices from './pages/admin/Prices';
 import Users from './pages/admin/Users';
 import AuditLogs from './pages/admin/AuditLogs';
+import RevenueAllocation from './pages/admin/RevenueAllocation';
 
 export default function App() {
   return (
@@ -34,6 +35,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="commissions" element={<Commissions />} />
           <Route path="clients" element={<Clients />} />
+          <Route path="revenue" element={<RevenueAllocation />} />
           <Route path="prices" element={<Prices />} />
           <Route path="users" element={<Users />} />
           <Route path="audit" element={<AuditLogs />} />

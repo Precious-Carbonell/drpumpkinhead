@@ -1,6 +1,6 @@
 import { useEffect, useCallback, useRef } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, Users, DollarSign, LogOut, Shield, ScrollText } from 'lucide-react';
+import { LayoutDashboard, FileText, Users, DollarSign, LogOut, Shield, ScrollText, Receipt } from 'lucide-react';
 import './Admin.css';
 
 const SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in ms
@@ -33,6 +33,11 @@ export default function AdminLayout() {
     if (loginTime && Date.now() - parseInt(loginTime, 10) > SESSION_TIMEOUT) {
       logout();
       return;
+    }
+
+    // If no login_time stored (older session), set it now
+    if (!loginTime) {
+      localStorage.setItem('login_time', Date.now().toString());
     }
 
     // Start inactivity timer
@@ -70,6 +75,9 @@ export default function AdminLayout() {
           </NavLink>
           <NavLink to="/admin/clients" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
             <Users size={18} /> Clients
+          </NavLink>
+          <NavLink to="/admin/revenue" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+            <Receipt size={18} /> Expenditure
           </NavLink>
           <NavLink to="/admin/prices" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
             <DollarSign size={18} /> Price List
